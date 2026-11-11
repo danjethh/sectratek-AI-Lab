@@ -7,7 +7,7 @@
 
 **Course:** AI for Cybersecurity and Digital Forensics
 **Author and instructor:** Daniel Kwaku Ntiamoah Addai, Mobile Threat Research Lead, SectraTEK Lab ([lab.sectratek.com](https://lab.sectratek.com))
-**Status:** Labs 1 and 2 available. Labs 3 to 5 in preparation.
+**Status:** Labs 1, 2 and 3 available. Labs 4 and 5 in preparation.
 
 ---
 
@@ -118,7 +118,7 @@ mobile-forensics case, with three design commitments:
 |---|---|---|
 | **Reflection** | Draft, self-critique, revise. | [Lab 1](lab1_reflection_pattern/) |
 | **Tool Use** | Inspect the artifact with a real tool instead of guessing. | [Lab 2](lab2_tool_use_pattern/) |
-| **ReAct** | Reason one step, act, observe, repeat. | Lab 3 (in preparation) |
+| **ReAct** | Reason one step, act, observe, repeat. | [Lab 3](lab3_react_pattern/) |
 | **Planning** | Break a hard question into checkable steps. | Lab 4 (in preparation) |
 | **Multiagent** | Split roles, compare findings, reconcile. | Lab 5 (in preparation) |
 
@@ -183,7 +183,7 @@ endpoint.
 |---|---|---|---|---|
 | 1 | [Reflection Pattern](lab1_reflection_pattern/) | Reflection | Suspected customer-data exfiltration (DF-2026-017) | Notebook, data, [slides](lab1_reflection_pattern/slides/) |
 | 2 | [Tool Use Pattern](lab2_tool_use_pattern/) | Tool Use | Stolen-vehicle sale preparation (TU-2026-004) | Notebook, data, [slides](lab2_tool_use_pattern/slides/) |
-| 3 | ReAct Pattern | ReAct | Communication verification | In preparation |
+| 3 | [ReAct Pattern](lab3_react_pattern/) | ReAct | Signal attempt during an unattended interval (RA-2026-009) | Notebook, data, [slides](lab3_react_pattern/slides/) |
 | 4 | Planning Pattern | Planning | Phone access and call timing | In preparation |
 | 5 | Multiagent Pattern | Multiagent | Transmission and chain-of-custody review | In preparation |
 
