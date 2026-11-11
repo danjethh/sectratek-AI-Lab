@@ -9,6 +9,8 @@
 **Author and instructor:** Daniel Kwaku Ntiamoah Addai, Mobile Threat Research Lead, SectraTEK Lab ([lab.sectratek.com](https://lab.sectratek.com))
 **Status:** All five labs available.
 
+**New here?** Start with the [Course Overview deck](course_overview/) for a 12-slide tour of the five patterns and how the labs run.
+
 ---
 
 ## Abstract
@@ -160,7 +162,8 @@ on). No real personal data is used anywhere in this repository.
 
 **Students (the fast path):**
 
-1. Open the lab you want (start with [Lab 1](lab1_reflection_pattern/)) and click the
+1. New to the course? Skim the [Course Overview deck](course_overview/) first. Then open the lab you
+   want (start with [Lab 1](lab1_reflection_pattern/)) and click the
    **Open in Colab** badge in its notebook.
 2. Run the setup cells. When prompted, paste a free Groq API key
    (see [docs/GROQ_SETUP.md](docs/GROQ_SETUP.md)). The key is hidden and is not saved.
