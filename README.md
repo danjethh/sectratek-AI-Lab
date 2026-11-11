@@ -7,7 +7,7 @@
 
 **Course:** AI for Cybersecurity and Digital Forensics
 **Author and instructor:** Daniel Kwaku Ntiamoah Addai, Mobile Threat Research Lead, SectraTEK Lab ([lab.sectratek.com](https://lab.sectratek.com))
-**Status:** Labs 1 to 4 available. Lab 5 in preparation.
+**Status:** All five labs available.
 
 ---
 
@@ -120,7 +120,7 @@ mobile-forensics case, with three design commitments:
 | **Tool Use** | Inspect the artifact with a real tool instead of guessing. | [Lab 2](lab2_tool_use_pattern/) |
 | **ReAct** | Reason one step, act, observe, repeat. | [Lab 3](lab3_react_pattern/) |
 | **Planning** | Break a hard question into checkable steps. | [Lab 4](lab4_planning_pattern/) |
-| **Multiagent** | Split roles, compare findings, reconcile. | Lab 5 (in preparation) |
+| **Multiagent** | Split roles, compare findings, reconcile. | [Lab 5](lab5_multiagent_pattern/) |
 
 ---
 
@@ -185,7 +185,7 @@ endpoint.
 | 2 | [Tool Use Pattern](lab2_tool_use_pattern/) | Tool Use | Stolen-vehicle sale preparation (TU-2026-004) | Notebook, data, [slides](lab2_tool_use_pattern/slides/) |
 | 3 | [ReAct Pattern](lab3_react_pattern/) | ReAct | Signal attempt during an unattended interval (RA-2026-009) | Notebook, data, [slides](lab3_react_pattern/slides/) |
 | 4 | [Planning Pattern](lab4_planning_pattern/) | Planning | Missing-phone timeline reconstruction (PL-2026-011) | Notebook, data, [slides](lab4_planning_pattern/slides/) |
-| 5 | Multiagent Pattern | Multiagent | Transmission and chain-of-custody review | In preparation |
+| 5 | [Multiagent Pattern](lab5_multiagent_pattern/) | Multiagent | Transmission and chain-of-custody review (MA-2026-022) | Notebook, data, [slides](lab5_multiagent_pattern/slides/) |
 
 Each lab folder has its own `README.md` written in the same research-paper structure as this one.
 
