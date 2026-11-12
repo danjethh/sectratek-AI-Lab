@@ -13,34 +13,50 @@
 
 ---
 
-## What it does
+## How it is built: one tool per IR action
 
-This is a RAG + agent copilot for incident response. Its knowledge is the company's own plan and
-playbooks; its actions are gated by the team's approval. A typical drill:
+Just as the Sectra DF agent walks a device image with a small fixed toolset, this copilot walks an
+**incident**. We took a comprehensive IR lifecycle (NIST SP 800-61 / SANS: *identify -> notify ->
+collect -> analyse -> contain -> eradicate -> recover -> after-action*) and, for every action a
+playbook typically calls for, decided what a language model can safely do, then built one tool per
+action. Each tool is one of three kinds:
+
+- **RUN** - Sectra does it itself: a local, read-only or analytical step with no external effect.
+- **DRAFT** - Sectra can't touch production, so it produces ready-to-run content for a human.
+- **SIMULATE** - an action with a side effect; Sectra only does it **after the team approves**, and
+  even then it is logged, never real.
+
+| Phase | Tools | Kind |
+|---|---|---|
+| **Knowledge** | `list_playbooks`, `search_playbooks`, `read_playbook`, `classify_incident` | RUN (read-only) |
+| **Notify / coordinate** | `draft_notification` · `notify`, `open_ticket`, `page_oncall` | DRAFT · SIMULATE (gated) |
+| **Guidance** | `recommend_collection`, `recommend_containment`, `recommend_eradication`, `recommend_recovery` | DRAFT |
+| **Containment action** | `contain` (isolate_host / disable_account / block_ioc) | SIMULATE (gated) |
+| **Evidence analysis** | `list_evidence`, `read_evidence`, `search_evidence`, `run_sql`, `build_timeline`, `extract_iocs`, `check_indicators` | RUN (read-only) |
+| **Post-incident** | `after_action_report` | RUN |
+
+Sectra reasons out loud (one short thought per step), uses exactly one tool per step, and cites the
+plan/playbook section behind every instruction - the same discipline as the DF agent.
+
+## A typical drill
 
 1. **Team:** "We think we have ransomware on a finance workstation."
-2. **Sectra** finds the ransomware playbook, classifies it (SEV-1), and gives the first step
-   (isolate the host, do **not** power it off), citing the playbook section.
-3. **Sectra** offers to notify management. On request it **drafts** the email, pulling the template
-   from the playbook, and asks the team to approve.
-4. **Team:** "approve." **Sectra** records a **simulated** send to the management distribution list
-   (no real email is ever sent) and moves on.
-5. **Sectra** recommends the exact **collection** tools, commands, and paths from the playbook.
-6. The team collects artifacts and **uploads** them; Sectra reads/searches them and answers
-   (e.g. "the security log shows the audit log was cleared - Event 1102 - and shadow copies deleted").
-
-## The tools
-
-| Group | Tools | What they do |
-|---|---|---|
-| **Knowledge (read-only)** | `list_playbooks`, `search_playbooks`, `read_playbook` | Find and read the plan and playbooks. |
-| **Actions (gated)** | `draft_email`, `send_email`, `recommend_collection` | Draft a notification (from the playbook template), **simulate** sending it only after approval, and give collection commands. |
-| **Evidence (read-only)** | `list_evidence`, `read_evidence`, `search_evidence`, `run_sql` | Read and query the artifacts the team uploads. |
+2. **Sectra** `classify_incident` -> ransomware, SEV-1; tells the team the first step (isolate, do
+   **not** power off), citing the playbook.
+3. **Sectra** offers to notify management: `draft_notification` pulls the template, then it **asks to
+   approve**. On "approve" -> `notify(approved=true)` logs a **simulated** send (nothing real).
+4. **Sectra** `recommend_collection` -> the exact tools, commands, and paths from the playbook.
+5. Team uploads `security_events.log` / `dns_queries.csv`. Sectra **runs** `build_timeline` (orders
+   the brute-force -> shadow-copy deletion -> log-clear sequence), `extract_iocs` + `check_indicators`
+   (flags `exfil-sync.net`, `su.exe`, `SysUpdateSvc` against the watch-list).
+6. **Sectra** `recommend_containment` / `recommend_eradication` / `recommend_recovery`, offers
+   `contain(block_ioc, ...)` on approval, and finally `after_action_report` from the action log.
 
 ## Bring your own
 
 - **Playbooks:** drop your own `.md` plan/playbooks into the `knowledge/` folder (or upload them in the
-  UI). A sample plan plus ransomware/phishing/exfiltration playbooks are bundled.
+  UI). A sample plan, ransomware/phishing/exfiltration playbooks, and a small threat-intel watch-list
+  (`threat_intel.md`) are bundled.
 - **Artifacts:** upload your own logs/CSV/SQLite into the evidence folder (or the UI). Two synthetic
   samples (`security_events.log`, `dns_queries.csv`) are bundled. Everything shipped is fictional.
 
@@ -63,8 +79,10 @@ These are deliberate choices; keep them if you adapt the lab.
   only *send* after the team approves in the chat, and even then the send is **simulated and logged** -
   the lab never wires real email. For production, keep the approval gate and put a real integration
   behind it; never let the model send on its own.
-- **It recommends, it does not execute.** Sectra gives the collection commands and paths; a human runs
-  them. An IR copilot should not be executing privileged commands on hosts during an incident.
+- **It recommends, it does not execute.** Sectra gives the collection/containment/eradication commands
+  and paths; a human runs them. The one exception is the deliberately *simulated* actions (`notify`,
+  `contain`, `open_ticket`, `page_oncall`): approval-gated and logged, never wired to anything real. An
+  IR copilot should not be executing privileged commands on hosts during an incident.
 - **Grounded and cited.** Every instruction is based on the plan/playbooks and names the section it came
   from, so the team can verify it. The model is told to say so plainly when the answer is not in the
   playbooks rather than invent one.
@@ -75,8 +93,9 @@ These are deliberate choices; keep them if you adapt the lab.
 - **The model is an assistant, not the incident commander.** Decisions (declaring severity, isolating
   production, legal/customer notification) stay with people. Free models also vary run to run; re-run or
   rephrase if a step is missed.
-- **Natural extensions:** a severity classifier, links to ticketing/Slack behind approval, more playbooks,
-  and an "after-action" summary generated from the action log.
+- **Natural extensions:** richer indicator enrichment (hashes, certs) behind `check_indicators`, real
+  ticketing/Slack integrations behind the approval gate, and more playbooks. (Severity classification,
+  a timeline, IOC checks, and the after-action report are already built in as RUN tools.)
 
 ## Running locally with no API key (Ollama)
 

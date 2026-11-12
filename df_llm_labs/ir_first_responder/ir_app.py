@@ -129,7 +129,10 @@ def on_bot(history, state):
             if "final_answer" in ev:
                 final = ev
             else:
-                trace += f"{ev['step']}. **{ev['action']}**(`{_fmt(ev['args'])}`)\n\n"
+                th = (ev.get("thought") or "").strip()
+                line = f"{ev['step']}. **{ev['action']}**(`{_fmt(ev['args'])}`)"
+                trace += (f"{ev['step']}. _{th}_\n   **{ev['action']}**(`{_fmt(ev['args'])}`)\n\n"
+                          if th else line + "\n\n")
                 history[-1]["content"] = trace
                 yield history, _log_md(state)
     except Exception as e:
@@ -156,12 +159,14 @@ INTRO = (
 
 EXAMPLES = [
     "We think we have ransomware on a finance workstation.",
-    "A user reported a phishing email and may have entered their password.",
     "We're seeing large unusual uploads from one host - possible data theft.",
     "Draft the management notification.",
     "Approve - send it.",
     "What evidence should we collect, and how?",
-    "We uploaded the security log - what does it show?",
+    "We uploaded security_events.log - build a timeline of what happened.",
+    "Pull the indicators out of dns_queries.csv and check them against the watch-list.",
+    "What should we do to contain and eradicate this?",
+    "Write the after-action report.",
 ]
 
 
