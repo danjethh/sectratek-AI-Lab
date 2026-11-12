@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="course_overview/SectraTEK_Course_Overview.pdf"><img src="docs/img/cover.png" alt="SectraTEK AI Lab - Five Patterns, One Discipline (course overview cover)" width="900"></a>
+</p>
+
 # SectraTEK AI Lab: Agentic AI for Digital Forensics
 
 > A hands-on teaching lab that uses agentic AI design patterns to make digital-forensic
@@ -66,6 +70,11 @@ the model inside a structured loop with a goal and a role, so it can review, ver
 collaborate before it returns a result. The same design patterns that make general AI agents
 more reliable turn out to map cleanly onto the habits of a careful investigator.
 
+<p align="center">
+  <img src="docs/img/chatbot_to_agent.png" alt="From a chatbot to an agent: a plain answer vs a model in a loop with a goal and a role" width="860"><br>
+  <sub><em>The core idea: a plain chatbot answers once and nothing catches an error; an agent puts the model in a loop with a goal and a role, so it reviews and verifies before it answers.</em></sub>
+</p>
+
 ---
 
 ## 2. Problem statement
@@ -114,6 +123,11 @@ mobile-forensics case, with three design commitments:
    the student sees every model call. Then it runs the same workflow through a small reusable
    class, so the student learns the abstraction without the loop becoming magic.
 
+<p align="center">
+  <img src="docs/img/evidence_bounded.png" alt="Evidence-bounded reasoning: observation vs inference vs overclaim" width="860"><br>
+  <sub><em>The discipline every lab trains: separate what the artifacts record (observation) from a reasonable interpretation (inference), and never claim what the evidence does not establish (overclaim).</em></sub>
+</p>
+
 ### The five patterns
 
 | Pattern | The investigator's habit it mirrors | Lab |
@@ -123,6 +137,11 @@ mobile-forensics case, with three design commitments:
 | **ReAct** | Reason one step, act, observe, repeat. | [Lab 3](lab3_react_pattern/) |
 | **Planning** | Break a hard question into checkable steps. | [Lab 4](lab4_planning_pattern/) |
 | **Multiagent** | Split roles, compare findings, reconcile. | [Lab 5](lab5_multiagent_pattern/) |
+
+<p align="center">
+  <img src="docs/img/five_patterns.png" alt="The five agentic patterns: Reflection, Tool Use, ReAct, Planning, Multiagent" width="900"><br>
+  <sub><em>The five patterns build on each other: Reflection, Tool Use, ReAct, Planning, then Multiagent. Start at Lab 1 and go in order.</em></sub>
+</p>
 
 ---
 
@@ -149,6 +168,11 @@ Every lab follows the same four-stage pedagogy:
    the `agentic_patterns` library, so the student sees the abstraction.
 4. **Evidence check.** The student answers a short set of questions that force each claim back to
    an artifact and name what remains uncertain.
+
+<p align="center">
+  <img src="docs/img/see_it_reuse_it.png" alt="See it, then reuse it: group analysis, build by hand, run the packaged agent, evidence check" width="900"><br>
+  <sub><em>Every lab follows the same path: look at the raw evidence first, build the loop by hand so every model call is visible, run the same workflow through a small reusable class, then check each claim against an artifact.</em></sub>
+</p>
 
 ### 5.3 Synthetic data
 
