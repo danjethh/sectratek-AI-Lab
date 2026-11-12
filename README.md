@@ -11,9 +11,9 @@
 
 **Course:** AI for Cybersecurity and Digital Forensics
 **Author and instructor:** Daniel Kwaku Ntiamoah Addai, Mobile Threat Research Lead, SectraTEK Lab ([lab.sectratek.com](https://lab.sectratek.com))
-**Status:** All five agentic-pattern labs and five LLM-for-forensics labs available.
+**Status:** All ten labs available: `lab01`-`lab05` agentic AI patterns, `lab06`-`lab10` LLMs for forensics.
 
-**New here?** Start with the [Course Overview deck](course_overview/) for a 12-slide tour of the five patterns and how the labs run. Then see the [LLM-for-forensics labs](#further-labs-llms-for-forensics): RAG, device and memory analysis agents, and an incident-response copilot.
+**New here?** Start with the [Course Overview deck](course_overview/) for a 12-slide tour of the five patterns and how the labs run. Then see [labs 06-10](#labs-06-10-llms-for-forensics): RAG, device and memory analysis agents, and an incident-response copilot.
 
 ---
 
@@ -30,7 +30,7 @@ students who may be new to programming, and they run entirely in a hosted notebo
 model endpoint. The learning objective is not to automate the examiner, but to give the
 examiner a faster, more honest assistant whose claims stay inside the evidence.
 
-Alongside the five pattern labs, five standalone labs apply language models to real forensic tasks:
+Alongside the five pattern labs, five standalone labs (06-10) apply language models to real forensic tasks:
 a retrieval-augmented assistant over case reports, tool-using agents over an Android device image,
 an Android bug report, and a Windows memory image (with Volatility 3), and an incident-response copilot
 grounded in a company's own plan, playbooks, and ISO 27001 ISMS. Every one of them cites the evidence
@@ -138,11 +138,11 @@ mobile-forensics case, with three design commitments:
 
 | Pattern | The investigator's habit it mirrors | Lab |
 |---|---|---|
-| **Reflection** | Draft, self-critique, revise. | [Lab 1](lab1_reflection_pattern/) |
-| **Tool Use** | Inspect the artifact with a real tool instead of guessing. | [Lab 2](lab2_tool_use_pattern/) |
-| **ReAct** | Reason one step, act, observe, repeat. | [Lab 3](lab3_react_pattern/) |
-| **Planning** | Break a hard question into checkable steps. | [Lab 4](lab4_planning_pattern/) |
-| **Multiagent** | Split roles, compare findings, reconcile. | [Lab 5](lab5_multiagent_pattern/) |
+| **Reflection** | Draft, self-critique, revise. | [Lab 1](lab01_reflection_pattern/) |
+| **Tool Use** | Inspect the artifact with a real tool instead of guessing. | [Lab 2](lab02_tool_use_pattern/) |
+| **ReAct** | Reason one step, act, observe, repeat. | [Lab 3](lab03_react_pattern/) |
+| **Planning** | Break a hard question into checkable steps. | [Lab 4](lab04_planning_pattern/) |
+| **Multiagent** | Split roles, compare findings, reconcile. | [Lab 5](lab05_multiagent_pattern/) |
 
 <p align="center">
   <img src="docs/img/five_patterns.png" alt="The five agentic patterns: Reflection, Tool Use, ReAct, Planning, Multiagent" width="900"><br>
@@ -198,7 +198,7 @@ the labs at their own files. No real personal data is stored anywhere in this re
 **Students (the fast path):**
 
 1. New to the course? Skim the [Course Overview deck](course_overview/) first. Then open the lab you
-   want (start with [Lab 1](lab1_reflection_pattern/)) and click the
+   want (start with [Lab 1](lab01_reflection_pattern/)) and click the
    **Open in Colab** badge in its notebook.
 2. Run the setup cells. When prompted, paste a free Groq API key
    (see [docs/GROQ_SETUP.md](docs/GROQ_SETUP.md)). The key is hidden and is not saved.
@@ -217,41 +217,45 @@ endpoint.
 
 ## 7. Lab index
 
-| # | Lab | Pattern | Case | Materials |
+All ten labs sit at the top level of this repository, numbered in teaching order: `lab01` to `lab05`
+teach the agentic AI patterns, and `lab06` to `lab10` apply language models to forensic tasks. Every lab
+folder has its own `README.md`, a slide deck (PDF and PowerPoint), and an **Open in Colab** notebook.
+
+### Labs 01-05: agentic AI patterns
+
+| Lab | Folder | Pattern | Case | Materials |
 |---|---|---|---|---|
-| 1 | [Reflection Pattern](lab1_reflection_pattern/) | Reflection | Suspected customer-data exfiltration (DF-2026-017) | Notebook, data, [slides](lab1_reflection_pattern/slides/) |
-| 2 | [Tool Use Pattern](lab2_tool_use_pattern/) | Tool Use | Stolen-vehicle sale preparation (TU-2026-004) | Notebook, data, [slides](lab2_tool_use_pattern/slides/) |
-| 3 | [ReAct Pattern](lab3_react_pattern/) | ReAct | Signal attempt during an unattended interval (RA-2026-009) | Notebook, data, [slides](lab3_react_pattern/slides/) |
-| 4 | [Planning Pattern](lab4_planning_pattern/) | Planning | Missing-phone timeline reconstruction (PL-2026-011) | Notebook, data, [slides](lab4_planning_pattern/slides/) |
-| 5 | [Multiagent Pattern](lab5_multiagent_pattern/) | Multiagent | Transmission and chain-of-custody review (MA-2026-022) | Notebook, data, [slides](lab5_multiagent_pattern/slides/) |
+| 01 | [lab01_reflection_pattern](lab01_reflection_pattern/) | Reflection | Suspected customer-data exfiltration (DF-2026-017) | Notebook, data, [slides](lab01_reflection_pattern/slides/) |
+| 02 | [lab02_tool_use_pattern](lab02_tool_use_pattern/) | Tool Use | Stolen-vehicle sale preparation (TU-2026-004) | Notebook, data, [slides](lab02_tool_use_pattern/slides/) |
+| 03 | [lab03_react_pattern](lab03_react_pattern/) | ReAct | Signal attempt during an unattended interval (RA-2026-009) | Notebook, data, [slides](lab03_react_pattern/slides/) |
+| 04 | [lab04_planning_pattern](lab04_planning_pattern/) | Planning | Missing-phone timeline reconstruction (PL-2026-011) | Notebook, data, [slides](lab04_planning_pattern/slides/) |
+| 05 | [lab05_multiagent_pattern](lab05_multiagent_pattern/) | Multiagent | Transmission and chain-of-custody review (MA-2026-022) | Notebook, data, [slides](lab05_multiagent_pattern/slides/) |
 
-Each lab folder has its own `README.md` written in the same research-paper structure as this one.
+### Labs 06-10: LLMs for forensics
 
-### Further labs: LLMs for forensics
-
-Beyond the five agentic-pattern labs, this repository also hosts standalone labs that apply language
-models to forensic tasks. Each has its own deck, Colab notebooks, and (for the chatbots) a Gradio chat UI.
+Standalone labs that put language models to work on forensic evidence. Each has its own deck, Colab
+notebooks, and (for the chatbots) a Gradio chat UI.
 
 <table>
   <tr>
-    <td align="center" width="33%"><a href="df_llm_labs/lab3_rag/"><img src="df_llm_labs/lab3_rag/slides/img/cover.png" alt="RAG over DF reports" width="100%"></a><br><sub><b>RAG over DF reports</b></sub></td>
-    <td align="center" width="33%"><a href="df_llm_labs/lab4_qwen/"><img src="df_llm_labs/lab4_qwen/slides/img/cover.png" alt="Forensic agent over an Android image" width="100%"></a><br><sub><b>Agent over an Android image</b></sub></td>
-    <td align="center" width="33%"><a href="df_llm_labs/bug_report_agent/"><img src="df_llm_labs/bug_report_agent/slides/img/cover.png" alt="Ask the Bug Report" width="100%"></a><br><sub><b>Ask the Bug Report</b></sub></td>
+    <td align="center" width="33%"><a href="lab06_llm_rag_case_reports/"><img src="lab06_llm_rag_case_reports/slides/img/cover.png" alt="Lab 06: RAG over DF case reports" width="100%"></a><br><sub><b>Lab 06</b> · RAG over case reports</sub></td>
+    <td align="center" width="33%"><a href="lab07_llm_android_image_agent/"><img src="lab07_llm_android_image_agent/slides/img/cover.png" alt="Lab 07: agent over an Android image" width="100%"></a><br><sub><b>Lab 07</b> · Agent over an Android image</sub></td>
+    <td align="center" width="33%"><a href="lab08_llm_bug_report_chatbot/"><img src="lab08_llm_bug_report_chatbot/slides/img/cover.png" alt="Lab 08: bug report chatbot" width="100%"></a><br><sub><b>Lab 08</b> · Bug report chatbot</sub></td>
   </tr>
   <tr>
-    <td align="center"><a href="df_llm_labs/ir_first_responder/"><img src="df_llm_labs/ir_first_responder/slides/img/cover.png" alt="Sectra First Responder" width="100%"></a><br><sub><b>Sectra First Responder (IR)</b></sub></td>
-    <td align="center"><a href="df_llm_labs/memory_forensics_agent/"><img src="df_llm_labs/memory_forensics_agent/slides/img/cover.png" alt="Ask the Memory" width="100%"></a><br><sub><b>Ask the Memory (Volatility 3)</b></sub></td>
+    <td align="center"><a href="lab09_llm_incident_response_copilot/"><img src="lab09_llm_incident_response_copilot/slides/img/cover.png" alt="Lab 09: incident response copilot" width="100%"></a><br><sub><b>Lab 09</b> · Incident-response copilot</sub></td>
+    <td align="center"><a href="lab10_llm_memory_forensics_volatility/"><img src="lab10_llm_memory_forensics_volatility/slides/img/cover.png" alt="Lab 10: memory forensics with Volatility 3" width="100%"></a><br><sub><b>Lab 10</b> · Memory forensics (Volatility 3)</sub></td>
     <td align="center" valign="middle"><sub>Practicals 1 and 2 (machine learning) live in their own repositories:<br><a href="https://github.com/danjethh/steg_analysis">steganalysis</a> and <a href="https://github.com/danjethh/audio_forensics">audio forensics</a>.</sub></td>
   </tr>
 </table>
 
-| Lab | Pattern | What it teaches |
-|---|---|---|
-| [RAG over DF reports](df_llm_labs/lab3_rag/) | Retrieval-Augmented Generation | Build a RAG from scratch so a model answers questions about case reports, grounded in them and cited. |
-| [Forensic agent over an Android image](df_llm_labs/lab4_qwen/) | Tool-using agent (ReAct) | Build an agent that lets a lightweight Qwen model walk a device image, answer a question, and cite the exact file it used. |
-| [Ask the Bug Report](df_llm_labs/bug_report_agent/) | Tool-using agent (chatbot) | The same agent over an Android bug report students can pull from their own phone. |
-| [Sectra First Responder](df_llm_labs/ir_first_responder/) | Agent + plan/playbook/ISMS grounding | An incident-response copilot that works from the company's IR plan, playbooks, and ISO 27001 ISMS, with approval-gated, simulated actions. |
-| [Ask the Memory](df_llm_labs/memory_forensics_agent/) | Tool-using agent over Volatility 3 | A memory-forensics analyst whose toolset is Volatility's plugin list, working a real public memory image with a ground-truth answer key. |
+| Lab | Folder | Technique | What it teaches |
+|---|---|---|---|
+| 06 | [lab06_llm_rag_case_reports](lab06_llm_rag_case_reports/) | Retrieval-Augmented Generation | Build a RAG from scratch so a model answers questions about case reports, grounded in them and cited. |
+| 07 | [lab07_llm_android_image_agent](lab07_llm_android_image_agent/) | Tool-using agent (ReAct) | An agent that lets a lightweight Qwen model walk an Android device image, answer a question, and cite the exact file it used. Includes chatbot versions. |
+| 08 | [lab08_llm_bug_report_chatbot](lab08_llm_bug_report_chatbot/) | Tool-using agent (chatbot) | The same agent over an Android bug report students can pull from their own phone. |
+| 09 | [lab09_llm_incident_response_copilot](lab09_llm_incident_response_copilot/) | Agent + plan, playbook, and ISMS grounding | An incident-response copilot that works from the company's IR plan, playbooks, and ISO 27001 ISMS, with approval-gated, simulated actions. |
+| 10 | [lab10_llm_memory_forensics_volatility](lab10_llm_memory_forensics_volatility/) | Tool-using agent over Volatility 3 | A memory-forensics analyst whose toolset is Volatility's plugin list, working a real public memory image with a ground-truth answer key. |
 
 ---
 
@@ -299,7 +303,7 @@ original copyright and permission notice are preserved in
 
 The SectraTEK adaptation (hosted zero-install runtime, self-contained notebooks, the slide decks,
 and this documentation) is by Daniel Kwaku Ntiamoah Addai, SectraTEK Lab. The LLM-for-forensics labs
-in [df_llm_labs/](df_llm_labs/) are original SectraTEK Lab work.
+(`lab06` to `lab10`) are original SectraTEK Lab work.
 
 The memory-forensics lab uses [Volatility 3](https://github.com/volatilityfoundation/volatility3)
 (Volatility Foundation, Volatility Software License), installed from PyPI at run time, and the public

@@ -44,7 +44,7 @@ notebook is self-contained.
 ## 4. Slides
 
 Each lab has a lecture deck under its `slides/` folder (for Lab 1,
-`lab1_reflection_pattern/slides/SectraTEK_Lab1_Reflection.pptx`). The decks follow a single story
+`lab01_reflection_pattern/slides/SectraTEK_Lab1_Reflection.pptx`). The decks follow a single story
 arc: background, how the work was done before AI, the problem, the discipline, the gap, the pattern,
 the case, and the practical. They are designed for students who are new to the material.
 
