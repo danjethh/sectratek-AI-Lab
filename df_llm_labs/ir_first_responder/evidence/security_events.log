@@ -1,0 +1,12 @@
+# SYNTHETIC Windows Security log excerpt (fictional, for training)
+# fields: time  EventID  description
+2024-07-28T09:41:12  4625  Failed logon  account=jmalik  src=10.4.2.19  reason=bad_password
+2024-07-28T09:41:18  4625  Failed logon  account=jmalik  src=10.4.2.19  reason=bad_password
+2024-07-28T09:41:25  4625  Failed logon  account=jmalik  src=10.4.2.19  reason=bad_password
+2024-07-28T09:41:31  4625  Failed logon  account=administrator  src=10.4.2.19  reason=bad_password
+2024-07-28T09:42:03  4624  Successful logon  account=jmalik  src=10.4.2.19  logon_type=3
+2024-07-28T09:43:50  4688  Process created  user=jmalik  image=C:\Windows\System32\cmd.exe  cmdline="cmd.exe /c vssadmin delete shadows /all /quiet"
+2024-07-28T09:44:02  4688  Process created  user=jmalik  image=C:\Users\jmalik\Downloads\7z.exe  cmdline="7z a -p backup.7z C:\Finance\*"
+2024-07-28T09:45:10  7045  Service installed  name=SysUpdateSvc  image=C:\Windows\Temp\su.exe  start=auto
+2024-07-28T09:47:33  1102  The audit log was cleared  by=jmalik
+2024-07-28T09:48:00  4688  Process created  user=jmalik  image=C:\Windows\Temp\su.exe  cmdline="su.exe -run"
