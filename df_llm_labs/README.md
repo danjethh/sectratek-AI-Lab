@@ -26,6 +26,7 @@ model key when asked, and follow it step by step. Nothing is installed locally.
 | 4 | [Forensic agent over an Android image](lab4_qwen/) | Build a small agent that lets a lightweight Qwen model walk a whole device image, answer an investigation question, and cite the exact file its answer came from. Includes a local-Ollama version and an interactive chatbot (UI + in-notebook). |
 | + | [Ask the Bug Report](bug_report_agent/) | The same agent as a chatbot over an Android **bug report** (`adb bugreport`), which students can generate from their own phone. UI and in-notebook versions. |
 | + | [Sectra First Responder](ir_first_responder/) | A retrieval-grounded IR copilot: the team tells it the incident and it walks them through the response from the company's **plan and playbooks**, drafts (and, on approval, *simulates* sending) the management notice, recommends collection commands, and reads uploaded artifacts. UI and in-notebook versions. |
+| + | [Ask the Memory](memory_forensics_agent/) | A memory-forensics analyst over **Volatility 3**: its toolset is Volatility's plugin list. Ask a question; it picks a plugin, runs it on a real public memory image (Cridex), and answers citing the plugin and PID. Comes with a ground-truth answer key. UI and in-notebook versions. |
 
 Lab numbering continues the course: Practical 1 (steganalysis) and Practical 2 (audio forensics) live
 in their own repositories; Practicals 3 and 4 are here.
@@ -42,5 +43,7 @@ You do not need to install Python, clone this repository, or own a GPU.
 
 ## Note on the data
 
-Every case, report, and indicator in these labs is **synthetic**, written for teaching. No real personal
-data is used anywhere in this repository.
+The cases, reports, and indicators written for these labs are **synthetic**, created for teaching. Where a
+small **real public** sample exists with published ground truth, a lab uses it instead and downloads it at
+run time (for example, the memory lab's Cridex image, verified against pinned hashes), so students can
+check the AI's answers against a known result. No real personal data is used anywhere in this repository.

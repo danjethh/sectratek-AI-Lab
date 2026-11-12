@@ -1,0 +1,6 @@
+memory/
+.volcache/
+__pycache__/
+*.vmem
+*.raw
+*.mem

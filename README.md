@@ -225,6 +225,9 @@ models to forensic tasks:
 |---|---|---|
 | [RAG over DF reports](df_llm_labs/lab3_rag/) | Retrieval-Augmented Generation | Build a RAG from scratch so a model answers questions about case reports, grounded in them and cited. |
 | [Forensic agent over an Android image](df_llm_labs/lab4_qwen/) | Tool-using agent (ReAct) | Build an agent that lets a lightweight Qwen model walk a device image, answer a question, and cite the exact file it used. |
+| [Ask the Bug Report](df_llm_labs/bug_report_agent/) | Tool-using agent (chatbot) | The same agent over an Android bug report students can pull from their own phone. |
+| [Sectra First Responder](df_llm_labs/ir_first_responder/) | Agent + plan/playbook/ISMS grounding | An incident-response copilot that works from the company's IR plan, playbooks, and ISO 27001 ISMS, with approval-gated, simulated actions. |
+| [Ask the Memory](df_llm_labs/memory_forensics_agent/) | Tool-using agent over Volatility 3 | A memory-forensics analyst whose toolset is Volatility's plugin list, working a real public memory image with a ground-truth answer key. |
 
 ---
 
