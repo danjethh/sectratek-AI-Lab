@@ -61,7 +61,7 @@ Every value in the sample is fictional.
 ## Questions to try
 
 - *What phone model and Android version is this?*
-- *Who is the account owner of this device?*
+- *Which accounts are configured on this device?*
 - *Which apps are installed?*
 - *What is the battery level?*
 - *What Wi-Fi networks are saved?*

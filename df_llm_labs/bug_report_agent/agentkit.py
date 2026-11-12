@@ -55,7 +55,7 @@ def build_image(root="android_image"):
             "<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<settings version=\"241\">\n"
             "  <setting id=\"1\" name=\"android_id\" value=\"a1b2c3d4e5f60718\" package=\"android\" />\n"
             "  <setting id=\"2\" name=\"bluetooth_name\" value=\"Pixel 7a\" package=\"com.android.settings\" />\n"
-            "  <setting id=\"3\" name=\"device_name\" value=\"Logan's Pixel 7a\" package=\"com.android.settings\" />\n"
+            "  <setting id=\"3\" name=\"device_name\" value=\"Nadia's Pixel 7a\" package=\"com.android.settings\" />\n"
             "</settings>\n",
         f"{root}/data/misc/wifi/WifiConfigStore.xml":
             "<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<WifiConfigStoreData>\n  <NetworkList>\n"
@@ -63,12 +63,12 @@ def build_image(root="android_image"):
             "<long name=\"LastConnectedTime\" value=\"1721295600000\" /></Network>\n"
             "    <Network><string name=\"SSID\">&quot;BrightBeans Cafe&quot;</string>"
             "<long name=\"LastConnectedTime\" value=\"1720950000000\" /></Network>\n"
-            "    <Network><string name=\"SSID\">&quot;Logan-Office&quot;</string>"
+            "    <Network><string name=\"SSID\">&quot;Okafor-Office&quot;</string>"
             "<long name=\"LastConnectedTime\" value=\"1721210400000\" /></Network>\n"
             "  </NetworkList>\n</WifiConfigStoreData>\n",
         # a JSON artifact (many Android apps store prefs/state as JSON)
         f"{root}/data/data/com.whatsapp/files/me.json":
-            json.dumps({"jid": "15550143788@s.whatsapp.net", "pushname": "Logan D",
+            json.dumps({"jid": "15550143788@s.whatsapp.net", "pushname": "Nadia O",
                         "registered": True, "last_backup": "2024-07-18"}, indent=2),
     }
     for rel, content in text_files.items():
@@ -91,7 +91,7 @@ def build_image(root="android_image"):
     make_db(f"{root}/data/data/com.google.android.gm/databases/accounts.db",
             "CREATE TABLE accounts(name TEXT, type TEXT, last_sync INTEGER);",
             [("INSERT INTO accounts VALUES (?,?,?)",
-              [("ldehner505@gmail.com", "com.google", 1721295600),
+              [("nadia.okafor@gmail.com", "com.google", 1721295600),
                ("+15550143788", "com.whatsapp", 1721240000)])])
     make_db(f"{root}/data/data/com.android.providers.contacts/databases/contacts2.db",
             "CREATE TABLE contacts(display_name TEXT, phone TEXT, times_contacted INTEGER);",

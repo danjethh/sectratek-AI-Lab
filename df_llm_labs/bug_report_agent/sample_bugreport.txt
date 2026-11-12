@@ -30,9 +30,9 @@ MemAvailable:    3120044 kB
 
 ------ ACCOUNT MANAGER (dumpsys account) ------
 Accounts: 2
-  Account {name=ldehner505@gmail.com, type=com.google}
+  Account {name=nadia.okafor@gmail.com, type=com.google}
   Account {name=+15550143788, type=com.whatsapp}
-User UserInfo{0:Logan's Pixel 7a:c13} running
+User UserInfo{0:Nadia's Pixel 7a:c13} running
 
 ------ PACKAGE SERVICE (dumpsys package) ------
 Packages:
@@ -66,7 +66,7 @@ mWifiInfo SSID: "HomeNet_5G", BSSID: a4:12:cd:00:11:22, RSSI: -47
 Saved networks:
   "HomeNet_5G" WPA2
   "BrightBeans Cafe" OPEN
-  "Logan-Office" WPA2
+  "Okafor-Office" WPA2
 
 ------ LOCATION (dumpsys location) ------
 Last Known Locations:

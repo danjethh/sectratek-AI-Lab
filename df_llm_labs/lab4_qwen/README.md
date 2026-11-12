@@ -18,7 +18,7 @@ This practical teaches the **agent** idea: a language model that does not answer
 student builds a small forensic agent by hand over a synthetic Android extraction. The agent is given
 three read-only tools (list a folder, read a file, run a SQL query), and a loop that lets a lightweight
 **Qwen** model think, call one tool, observe the result, and repeat until it can answer, with the file it
-used named as the citation. A side-by-side comparison shows the point: asked who owns the phone, a plain
+used named as the citation. A side-by-side comparison shows the point: asked which accounts are on the phone, a plain
 model invents a fluent, specific, wrong name; the agent walks the image, reads the real account database,
 and answers with the artifact path. The whole thing is a few lines of plain Python, so every decision and
 every source is visible. The discipline is the same one that runs through this course: say only what the
@@ -45,14 +45,14 @@ evidence supports, and show where it came from.
 
 ## 1. Background
 
-To answer a simple question from a phone image, such as *who owns this device?*, an examiner has to do
+To answer a simple question from a phone image, such as *which accounts are signed in on this device?*, an examiner has to do
 two things: **know which artifact holds the answer** (out of thousands of files in a full extraction), and
 then **write SQL** to pull the record from the right table of the right database. This is precise and
 defensible, and it is how the skill has always been taught. Its cost is that it needs an expert who
 already knows the map of the device, and it has to be repeated by hand for every new question.
 
 The tempting shortcut, asking a chatbot directly, is worse. The model was trained on the public web, not
-on this phone, so when asked who owns a device it cannot see, it does not say so: it invents a plausible,
+on this phone, so when asked which accounts are on a device it cannot see, it does not say so: it invents a plausible,
 fluent, and entirely fictional owner, with no file behind it.
 
 ---
@@ -128,7 +128,7 @@ one so the agent has somewhere to navigate. Everything in it is fictional.
 
 | Artifact | Holds |
 |---|---|
-| `data/data/com.google.android.gm/databases/accounts.db` | The Google account (the device owner) |
+| `data/data/com.google.android.gm/databases/accounts.db` | The Google and app accounts signed in on the device |
 | `data/data/com.android.providers.contacts/databases/contacts2.db` | Saved contacts |
 | `data/data/com.android.providers.telephony/databases/mmssms.db` | SMS messages |
 | `data/data/com.whatsapp/databases/msgstore.db` | WhatsApp messages |
@@ -147,7 +147,7 @@ All accounts, numbers, and identifiers are fabricated for teaching.
 2. Run **Part 0** (setup): install `openai`; connect to a free Qwen model (paste an OpenRouter key); build
    the synthetic Android image.
 3. Run **Part A**: define the three read-only tools, the tool protocol, and the agent loop, then ask the
-   first question (*who owns the device?*) and watch the reasoning trace.
+   first question (*which email accounts are signed in on this device?*) and watch the reasoning trace.
 4. Run **Part B**: ask the same question with and without the agent, and compare.
 5. Run **Part C**: ask your own investigation questions over the image.
 6. Fill in the short write-up and save the notebook.
@@ -166,7 +166,7 @@ takes a wrong turn or runs out of steps, re-run the cell or name the kind of art
 
 **With the agent (read + cited):**
 
-> "The device owner is ldehner505@gmail.com." `[data/data/com.google.android.gm/databases/accounts.db]`
+> "The signed-in accounts are nadia.okafor@gmail.com (Google) and a WhatsApp number." `[data/data/com.google.android.gm/databases/accounts.db]`
 > - read from the real account database, with the exact file named so you can open and confirm it.
 
 Same question, very different trust.

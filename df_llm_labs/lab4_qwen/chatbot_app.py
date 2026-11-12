@@ -89,7 +89,7 @@ def respond(message, history):
 
 
 EXAMPLES = [
-    "Who is the owner of this device?",
+    "Which email accounts are signed in on this device?",
     "What phone model is this and which Android version?",
     "How many contacts are saved?",
     "What is the most recent text message that was sent, and to whom?",
