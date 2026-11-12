@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Practical3_RAG.pdf"><img src="slides/img/cover.png" alt="Lab 06: Building a RAG over Digital-Forensics Reports - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab06_RAG.pdf"><img src="slides/img/cover.png" alt="Lab 06: Building a RAG over Digital-Forensics Reports - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 06: Building a RAG over Digital-Forensics Reports
@@ -12,7 +12,7 @@
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** Retrieval-Augmented Generation (RAG), built from scratch
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_Practical3_RAG.pdf) : [PowerPoint](slides/SectraTEK_Practical3_RAG.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab06_RAG.pdf) : [PowerPoint](slides/SectraTEK_Lab06_RAG.pptx)
 
 ---
 
@@ -216,7 +216,7 @@ and whether the system admitted it; and one sentence on why retrieval makes answ
 |---|---|
 | `03_lab_notebook.ipynb` | The hosted (Colab/Groq) student notebook |
 | `reports/` | The six synthetic case reports (the knowledge base) |
-| `slides/SectraTEK_Practical3_RAG.pptx` | The lecture deck for this lab |
+| `slides/SectraTEK_Lab06_RAG.pptx` | The lecture deck for this lab |
 | `README.md` | This document |
 
 ---
