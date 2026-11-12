@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_Practical4_Agent.pdf"><img src="slides/img/cover.png" alt="Practical 4: A Forensic Agent Over an Android Image - lecture deck cover" width="880"></a>
+</p>
+
 # Practical 4: A Forensic Agent Over an Android Image
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/df_llm_labs/lab4_qwen/04_lab_notebook.ipynb)
@@ -82,6 +86,11 @@ answer, then cite the file it used.
 ---
 
 ## 4. The solution: a tool-using agent
+
+<p align="center">
+  <img src="slides/img/react_loop.png" alt="Think, act, observe, repeat - the ReAct loop" width="840"><br>
+  <sub><em>The agent loops: think, call one read-only tool, observe what it returns, and repeat until it can answer with the exact file it opened.</em></sub>
+</p>
 
 ```
  Question --> [ Agent: think -> call ONE tool -> observe the result ] --> repeat
@@ -171,6 +180,11 @@ takes a wrong turn or runs out of steps, re-run the cell or name the kind of art
 > - read from the real account database, with the exact file named so you can open and confirm it.
 
 Same question, very different trust.
+
+<p align="center">
+  <img src="slides/img/model_vs_agent.png" alt="The same question, two ways: model alone vs. the agent" width="840"><br>
+  <sub><em>Asked the same question, the bare model invents a fluent, fileless answer; the agent reads the real database and cites the artifact.</em></sub>
+</p>
 
 ---
 

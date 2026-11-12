@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_IR_First_Responder.pdf"><img src="slides/img/cover.png" alt="Sectra First Responder - lecture deck cover" width="880"></a>
+</p>
+
 # Sectra First Responder: an Incident-Response Chatbot over your Plan and Playbooks
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/df_llm_labs/ir_first_responder/ir_chatbot_ui.ipynb)
@@ -27,6 +31,11 @@ action. Each tool is one of three kinds:
 - **SIMULATE** - an action with a side effect; Sectra only does it **after the team approves**, and
   even then it is logged, never real.
 
+<p align="center">
+  <img src="slides/img/doctrine.png" alt="RUN, DRAFT, or SIMULATE - one tool per action" width="840"><br>
+  <sub><em>Every action a playbook calls for is classified RUN (Sectra does it), DRAFT (it writes it for a human), or SIMULATE (only after the team approves, and only ever logged).</em></sub>
+</p>
+
 | Phase | Tools | Kind |
 |---|---|---|
 | **Knowledge** | `list_playbooks`, `search_playbooks`, `read_playbook`, `classify_incident` | RUN (read-only) |
@@ -52,6 +61,11 @@ plan/playbook section behind every instruction - the same discipline as the DF a
    (flags `exfil-sync.net`, `su.exe`, `SysUpdateSvc` against the watch-list).
 6. **Sectra** `recommend_containment` / `recommend_eradication` / `recommend_recovery`, offers
    `contain(block_ioc, ...)` on approval, and finally `after_action_report` from the action log.
+
+<p align="center">
+  <img src="slides/img/drill.png" alt="A ransomware incident walked end to end" width="840"><br>
+  <sub><em>One incident, start to finish: classify, notify, collect, analyse, contain, close out - each step picks the right tool and cites the playbook.</em></sub>
+</p>
 
 ## Bring your own
 

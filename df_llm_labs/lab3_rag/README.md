@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_Practical3_RAG.pdf"><img src="slides/img/cover.png" alt="Practical 3: Building a RAG over Digital-Forensics Reports - lecture deck cover" width="880"></a>
+</p>
+
 # Practical 3: Building a RAG over Digital-Forensics Reports
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/df_llm_labs/lab3_rag/03_lab_notebook.ipynb)
@@ -80,6 +84,11 @@ the question and handing the model only those, with an instruction to answer fro
 ---
 
 ## 4. The solution: Retrieval-Augmented Generation
+
+<p align="center">
+  <img src="slides/img/rag_pipeline.png" alt="Retrieve, then generate - the RAG pipeline" width="840"><br>
+  <sub><em>RAG has two moves: retrieve the passages most related to the question, then generate an answer from only those passages, with citations.</em></sub>
+</p>
 
 ```
  Question --> [ Retrieve the closest passages ] <-- your reports
@@ -164,6 +173,11 @@ and the embedding model (~90 MB) downloads once on first use.
 > open.
 
 Same question, very different trust.
+
+<p align="center">
+  <img src="slides/img/model_vs_rag.png" alt="The same question, two ways: model alone vs. RAG" width="840"><br>
+  <sub><em>The bare model invents a confident, sourceless case summary; with RAG the answer is grounded in the retrieved reports and cites them.</em></sub>
+</p>
 
 ---
 
