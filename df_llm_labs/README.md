@@ -23,7 +23,8 @@ model key when asked, and follow it step by step. Nothing is installed locally.
 | # | Lab | What it teaches |
 |---|---|---|
 | 3 | [RAG over DF reports](lab3_rag/) | Build a Retrieval-Augmented Generation system from scratch so a model answers questions about your case reports, grounded in them and with citations. |
-| 4 | [Forensic agent over an Android image](lab4_qwen/) | Build a small agent that lets a lightweight Qwen model walk a whole device image, answer an investigation question, and cite the exact file its answer came from. |
+| 4 | [Forensic agent over an Android image](lab4_qwen/) | Build a small agent that lets a lightweight Qwen model walk a whole device image, answer an investigation question, and cite the exact file its answer came from. Includes a local-Ollama version and an interactive chatbot (UI + in-notebook). |
+| + | [Ask the Bug Report](bug_report_agent/) | The same agent as a chatbot over an Android **bug report** (`adb bugreport`), which students can generate from their own phone. UI and in-notebook versions. |
 
 Lab numbering continues the course: Practical 1 (steganalysis) and Practical 2 (audio forensics) live
 in their own repositories; Practicals 3 and 4 are here.

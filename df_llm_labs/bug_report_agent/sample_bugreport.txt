@@ -1,0 +1,90 @@
+========================================================
+== dumpstate: 2024-07-28 10:15:03
+== (SYNTHETIC bug report, fictional, for teaching only)
+========================================================
+
+Build: google/lynx/lynx:14/AP2A.240705.005/2024072800:user/release-keys
+Build fingerprint: 'google/lynx/lynx:14/AP2A.240705.005/2024072800:user/release-keys'
+Bootloader: lynx-1.2-10000000
+Radio: g5300q-000000
+Network: Verizon, LTE
+Kernel: Linux version 5.15.123-android14
+Uptime: up 2 days, 4 hours, 11 minutes
+Bugreport format version: 2.0
+Serial number: 1A2B3C4D5E
+
+------ SYSTEM PROPERTIES ------
+[ro.product.manufacturer]: [Google]
+[ro.product.model]: [Pixel 7a]
+[ro.product.device]: [lynx]
+[ro.build.version.release]: [14]
+[ro.build.version.sdk]: [34]
+[ro.serialno]: [1A2B3C4D5E]
+[persist.sys.timezone]: [America/New_York]
+[gsm.sim.operator.alpha]: [Verizon]
+
+------ MEMORY INFO (/proc/meminfo) ------
+MemTotal:        7904320 kB
+MemFree:          612340 kB
+MemAvailable:    3120044 kB
+
+------ ACCOUNT MANAGER (dumpsys account) ------
+Accounts: 2
+  Account {name=ldehner505@gmail.com, type=com.google}
+  Account {name=+15550143788, type=com.whatsapp}
+User UserInfo{0:Logan's Pixel 7a:c13} running
+
+------ PACKAGE SERVICE (dumpsys package) ------
+Packages:
+  Package [com.google.android.gm] (gmail)
+    versionName=2024.07.14
+    firstInstallTime=2023-01-11 09:12:44
+  Package [com.whatsapp] (whatsapp)
+    versionName=2.24.14.78
+    firstInstallTime=2023-02-02 18:40:10
+  Package [com.instagram.android] (instagram)
+    versionName=342.0.0.0
+    firstInstallTime=2023-03-19 21:05:33
+  Package [com.facebook.katana] (facebook)
+    versionName=468.0.0.0
+    firstInstallTime=2024-05-30 08:22:19
+  Package [org.thoughtcrime.securesms] (signal)
+    versionName=7.11.4
+    firstInstallTime=2024-06-14 12:01:55
+
+------ BATTERY STATS (dumpsys batterystats) ------
+Battery level: 73
+Battery scale: 100
+Battery status: discharging
+Battery health: good
+Estimated battery capacity: 4385 mAh
+Screen on time: 5h 12m over last 24h
+
+------ WIFI (dumpsys wifi) ------
+Wi-Fi is enabled
+mWifiInfo SSID: "HomeNet_5G", BSSID: a4:12:cd:00:11:22, RSSI: -47
+Saved networks:
+  "HomeNet_5G" WPA2
+  "BrightBeans Cafe" OPEN
+  "Logan-Office" WPA2
+
+------ LOCATION (dumpsys location) ------
+Last Known Locations:
+  gps: 40.7128,-74.0060 acc=12m time=2024-07-28 09:58:11
+
+------ SYSTEM LOG (logcat -d) ------
+07-28 10:12:33.123  1456  1498 I ActivityManager: Start proc com.whatsapp for service
+07-28 10:12:40.004  1456  2011 W PackageManager: Package com.example.sideloaded has not been verified
+07-28 10:13:01.456  1456  2001 E ActivityManager: ANR in com.instagram.android (reason: Input dispatching timed out)
+07-28 10:13:45.900  1456  1500 I BatteryService: level=73 status=discharging
+07-28 10:14:02.117  2203  2203 E AndroidRuntime: FATAL EXCEPTION in com.example.sideloaded: java.lang.NullPointerException
+07-28 10:14:30.661  1456  1489 W WifiService: Connected to "HomeNet_5G"
+
+------ USAGE STATS (dumpsys usagestats) ------
+In-use time (last 24h):
+  com.instagram.android: 3h 41m
+  com.whatsapp: 1h 12m
+  com.google.android.gm: 0h 34m
+
+------ DUMPSYS BATTERYSTATS CHECKIN ------
+(omitted in this synthetic sample)

@@ -105,7 +105,7 @@ plain model.
 
 | Piece | What it does |
 |---|---|
-| **The tools** | Three read-only Python functions: `list_dir(path)`, `read_file(path)`, `run_sql(path, query)`. All are sealed inside the image folder and cannot change evidence. |
+| **The tools** | Five read-only Python functions: `list_dir(path)`, `read_file(path)` (handles text, JSON, and points to `run_sql` for databases), `run_sql(path, query)`, `find_files(name)`, and `search_text(keyword)`. All are sealed inside the image folder and cannot change evidence. An optional, off-by-default `run_python(code)` tool (Part D) lets the agent write its own code, to show the power and the risk. |
 | **The protocol** | A system prompt that asks the model to reply with one small JSON object each turn: either a tool call, or a final answer with an `evidence_path`. |
 | **The loop** | Ask the model for its next move, run that one tool, feed the result back as an observation, and repeat until it answers or hits a step limit. |
 | **The guardrail** | Tools are read-only and path-sandboxed. The agent cannot write, and cannot leave the device, the way a loosely-scoped agent drifts into fetching a web page it was never meant to touch. |
@@ -206,15 +206,34 @@ model and the agent on the same question; and one sentence on why citing the fil
 
 | Path | What it is |
 |---|---|
-| `04_lab_notebook.ipynb` | The hosted (Colab/Qwen) student notebook |
+| `04_lab_notebook.ipynb` | The hosted (Colab/OpenRouter) step-by-step teaching notebook |
+| `04_lab_notebook_local.ipynb` | The same lab, but with a **local** Qwen via Ollama (download-to-PC, no API key) |
+| `chatbot_ui.ipynb` | The agent as an interactive **chatbot with a UI** (Gradio; Colab gives a public link) |
+| `chatbot_jupyter.ipynb` | The agent as a **chatbot run in the notebook** (`ask("...")`, no UI framework) |
+| `chatbot_app.py` | The Gradio chatbot as a script, to run locally: `python chatbot_app.py` |
+| `agentkit.py` | The shared agent core (model connection, tools, the think-act-observe loop) |
 | `slides/SectraTEK_Practical4_Agent.pptx` | The lecture deck for this lab |
 | `README.md` | This document |
 
-The synthetic Android image is created by the notebook itself, so there is no evidence to download.
+The synthetic Android image is created by the code itself, so there is no evidence to download.
 
 ---
 
-## 12. Credits
+## 12. Running it other ways
+
+- **On your own PC, no API key:** open `04_lab_notebook_local.ipynb` and follow it. It uses a local Qwen
+  through [Ollama](https://ollama.com) (`ollama pull qwen3:8b`), so nothing leaves your machine. Run it in
+  Jupyter on your computer, not in Colab (Colab cannot reach a model on your machine).
+- **As a chatbot:** `chatbot_ui.ipynb` launches a real chat window; `chatbot_jupyter.ipynb` runs the chat
+  inside the notebook. Both use the same agent. A sister chatbot that answers questions about an Android
+  **bug report** (which you can generate from your own phone with `adb bugreport`) lives in
+  [`../bug_report_agent/`](../bug_report_agent/).
+- **Letting the agent write code:** Part D of the lab adds an optional `run_python` tool. It is off by
+  default and blocks obvious writes, so you can see both what it enables and why it is risky on real evidence.
+
+---
+
+## 13. Credits
 
 The lab design, the synthetic image, and the from-scratch agent are original, written for this course by
 Daniel Kwaku Ntiamoah Addai, SectraTEK Lab. The idea of pointing a small local model at a whole Android
