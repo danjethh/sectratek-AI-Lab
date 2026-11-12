@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab3_ReAct.pdf"><img src="slides/img/cover.png" alt="Lab 3: The ReAct Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab03_ReAct.pdf"><img src="slides/img/cover.png" alt="Lab 3: The ReAct Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 03: The ReAct Pattern for Step-by-Step Verification
@@ -13,7 +13,7 @@
 **Pattern:** ReAct (Thought -> Action -> Observation, repeated, then Response)
 **Case:** Signal image-sending attempt during an unattended interval, `RA-2026-009`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab3_ReAct.pdf) : [PowerPoint](slides/SectraTEK_Lab3_ReAct.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab03_ReAct.pdf) : [PowerPoint](slides/SectraTEK_Lab03_ReAct.pptx)
 
 ---
 
@@ -245,7 +245,7 @@ confirmed delivery. Instructor guidance is in [../docs/INSTRUCTOR_GUIDE.md](../d
 |---|---|
 | `03_lab_notebook.ipynb` | The hosted (Colab/Groq) student notebook |
 | `data/` | The five synthetic case artifacts |
-| `slides/SectraTEK_Lab3_ReAct.pptx` | The lecture deck for this lab |
+| `slides/SectraTEK_Lab03_ReAct.pptx` | The lecture deck for this lab |
 | `README.md` | This document |
 
 ---

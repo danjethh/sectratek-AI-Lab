@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab5_Multiagent.pdf"><img src="slides/img/cover.png" alt="Lab 5: The Multiagent Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab05_Multiagent.pdf"><img src="slides/img/cover.png" alt="Lab 5: The Multiagent Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 05: The Multiagent Pattern for Evidence and Custody Review
@@ -13,7 +13,7 @@
 **Pattern:** Multiagent (specialist roles + handoff + a Crew that orders them)
 **Case:** File transmission and chain-of-custody review, `MA-2026-022`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab5_Multiagent.pdf) : [PowerPoint](slides/SectraTEK_Lab5_Multiagent.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab05_Multiagent.pdf) : [PowerPoint](slides/SectraTEK_Lab05_Multiagent.pptx)
 
 ---
 
@@ -255,7 +255,7 @@ uncertainty. Instructor guidance is in [../docs/INSTRUCTOR_GUIDE.md](../docs/INS
 |---|---|
 | `03_lab_notebook.ipynb` | The hosted (Colab/Groq) student notebook |
 | `data/` | The six synthetic case artifacts |
-| `slides/SectraTEK_Lab5_Multiagent.pptx` | The lecture deck for this lab |
+| `slides/SectraTEK_Lab05_Multiagent.pptx` | The lecture deck for this lab |
 | `README.md` | This document |
 
 ---

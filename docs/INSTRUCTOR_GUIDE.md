@@ -43,8 +43,8 @@ notebook is self-contained.
 
 ## 4. Slides
 
-Each lab has a lecture deck under its `slides/` folder (for Lab 1,
-`lab01_reflection_pattern/slides/SectraTEK_Lab1_Reflection.pptx`). The decks follow a single story
+Each lab has a lecture deck under its `slides/` folder (for Lab 01,
+`lab01_reflection_pattern/slides/SectraTEK_Lab01_Reflection.pptx`). The decks follow a single story
 arc: background, how the work was done before AI, the problem, the discipline, the gap, the pattern,
 the case, and the practical. They are designed for students who are new to the material.
 
@@ -60,7 +60,7 @@ the notebook will also print available models on demand.
 
 ---
 
-## 6. Assessment (Lab 1 example)
+## 6. Assessment (Lab 01 example)
 
 Score the model draft, the revised report, and the student's evidence-check answers with a shared
 0 to 4 rubric across four dimensions:

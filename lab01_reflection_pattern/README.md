@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab1_Reflection.pdf"><img src="slides/img/cover.png" alt="Lab 1: The Reflection Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab01_Reflection.pdf"><img src="slides/img/cover.png" alt="Lab 1: The Reflection Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 01: The Reflection Pattern for Evidence-Bounded Reasoning
@@ -13,7 +13,7 @@
 **Pattern:** Reflection (generate, critique, revise, repeat)
 **Case:** Suspected customer-data exfiltration, `DF-2026-017`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab1_Reflection.pdf) : [PowerPoint](slides/SectraTEK_Lab1_Reflection.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab01_Reflection.pdf) : [PowerPoint](slides/SectraTEK_Lab01_Reflection.pptx)
 
 ---
 
@@ -271,7 +271,7 @@ Instructors: a scoring rubric and target-attainment guidance are in
 |---|---|
 | `03_lab_notebook.ipynb` | The hosted (Colab/Groq) student notebook |
 | `data/` | The six synthetic case artifacts |
-| `slides/SectraTEK_Lab1_Reflection.pptx` | The lecture deck for this lab |
+| `slides/SectraTEK_Lab01_Reflection.pptx` | The lecture deck for this lab |
 | `README.md` | This document |
 
 ---

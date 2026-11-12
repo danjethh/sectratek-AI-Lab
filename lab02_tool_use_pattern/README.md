@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab2_ToolUse.pdf"><img src="slides/img/cover.png" alt="Lab 2: The Tool Use Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab02_ToolUse.pdf"><img src="slides/img/cover.png" alt="Lab 2: The Tool Use Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 02: The Tool Use Pattern for Evidence Inspection
@@ -13,7 +13,7 @@
 **Pattern:** Tool Use (choose a tool, pass valid arguments, read the observation, reason)
 **Case:** Stolen-vehicle sale preparation, `TU-2026-004`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab2_ToolUse.pdf) : [PowerPoint](slides/SectraTEK_Lab2_ToolUse.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab02_ToolUse.pdf) : [PowerPoint](slides/SectraTEK_Lab02_ToolUse.pptx)
 
 ---
 
@@ -254,7 +254,7 @@ mapping with limits. Instructor guidance is in [../docs/INSTRUCTOR_GUIDE.md](../
 |---|---|
 | `03_lab_notebook.ipynb` | The hosted (Colab/Groq) student notebook |
 | `data/` | The six synthetic case artifacts |
-| `slides/SectraTEK_Lab2_ToolUse.pptx` | The lecture deck for this lab |
+| `slides/SectraTEK_Lab02_ToolUse.pptx` | The lecture deck for this lab |
 | `README.md` | This document |
 
 ---

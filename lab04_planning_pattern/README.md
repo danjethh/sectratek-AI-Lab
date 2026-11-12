@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab4_Planning.pdf"><img src="slides/img/cover.png" alt="Lab 4: The Planning Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab04_Planning.pdf"><img src="slides/img/cover.png" alt="Lab 4: The Planning Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 04: The Planning Pattern for Adaptive Timeline Reconstruction
@@ -13,7 +13,7 @@
 **Pattern:** Planning (plan -> observe -> replan, then conclude)
 **Case:** Timeline reconstruction of a missing phone, `PL-2026-011`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab4_Planning.pdf) : [PowerPoint](slides/SectraTEK_Lab4_Planning.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab04_Planning.pdf) : [PowerPoint](slides/SectraTEK_Lab04_Planning.pptx)
 
 ---
 
@@ -255,7 +255,7 @@ attachment unconfirmed as a delivery. Instructor guidance is in
 |---|---|
 | `03_lab_notebook.ipynb` | The hosted (Colab/Groq) student notebook |
 | `data/` | The six synthetic case artifacts |
-| `slides/SectraTEK_Lab4_Planning.pptx` | The lecture deck for this lab |
+| `slides/SectraTEK_Lab04_Planning.pptx` | The lecture deck for this lab |
 | `README.md` | This document |
 
 ---
