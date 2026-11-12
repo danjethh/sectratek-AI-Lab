@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_Lab5_Multiagent.pdf"><img src="slides/img/cover.png" alt="Lab 5: The Multiagent Pattern - lecture deck cover" width="880"></a>
+</p>
+
 # Lab 5: The Multiagent Pattern for Evidence and Custody Review
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/lab5_multiagent_pattern/03_lab_notebook.ipynb)
@@ -9,6 +13,7 @@
 **Pattern:** Multiagent (specialist roles + handoff + a Crew that orders them)
 **Case:** File transmission and chain-of-custody review, `MA-2026-022`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab5_Multiagent.pdf) : [PowerPoint](slides/SectraTEK_Lab5_Multiagent.pptx)
 
 ---
 
@@ -85,6 +90,12 @@ self-certified.
 ---
 
 ## 4. The solution: the Multiagent Pattern
+
+<p align="center">
+  <img src="slides/img/multiagent.png" alt="The Multiagent pattern: split roles, compare, reconcile" width="860"><br>
+  <sub><em>The Multiagent pattern: specialist agents each do one part of the review - investigation, verification, custody audit - and hand their findings forward to a single, cross-checked verdict.</em></sub>
+</p>
+
 
 ```
    InvestigationAgent ----> EvidenceVerificationAgent ----> CustodyAuditAgent ----> Final conclusion
@@ -179,6 +190,12 @@ models available on your key.
 ---
 
 ## 8. Worked example: two questions, kept apart
+
+<p align="center">
+  <img src="slides/img/worked.png" alt="A worked multiagent example" width="860"><br>
+  <sub><em>Two questions, kept apart: the technical question (was the file transmitted?) and the custody question (was the evidence handled well?) are answered by separate roles, so neither masks the other.</em></sub>
+</p>
+
 
 | | Was the file transmitted? (technical) | Was the evidence handled well? (custody) |
 |---|---|---|

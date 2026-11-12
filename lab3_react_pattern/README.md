@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_Lab3_ReAct.pdf"><img src="slides/img/cover.png" alt="Lab 3: The ReAct Pattern - lecture deck cover" width="880"></a>
+</p>
+
 # Lab 3: The ReAct Pattern for Step-by-Step Verification
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/lab3_react_pattern/03_lab_notebook.ipynb)
@@ -9,6 +13,7 @@
 **Pattern:** ReAct (Thought -> Action -> Observation, repeated, then Response)
 **Case:** Signal image-sending attempt during an unattended interval, `RA-2026-009`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab3_ReAct.pdf) : [PowerPoint](slides/SectraTEK_Lab3_ReAct.pptx)
 
 ---
 
@@ -82,6 +87,12 @@ confirmed **delivery**, and that distinction only survives if each fact is check
 ---
 
 ## 4. The solution: the ReAct Pattern
+
+<p align="center">
+  <img src="slides/img/react_loop.png" alt="The ReAct loop: reason, act, observe, repeat" width="860"><br>
+  <sub><em>The ReAct loop: reason one step, act with a single tool, observe the result, and repeat - every turn visible - until the evidence supports a final answer.</em></sub>
+</p>
+
 
 ```
             +----------------- repeat until the evidence is enough -----------------+
@@ -173,6 +184,12 @@ models available on your key.
 ---
 
 ## 8. Worked trace
+
+<p align="center">
+  <img src="slides/img/worked.png" alt="A worked ReAct trace" width="860"><br>
+  <sub><em>Three turns to a bounded answer: each thought leads to one tool call, and the conclusion stops at an attempt because that is all the evidence shows.</em></sub>
+</p>
+
 
 | Turn | Thought | Action | Observation | Why it matters |
 |---|---|---|---|---|

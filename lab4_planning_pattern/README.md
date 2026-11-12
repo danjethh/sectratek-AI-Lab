@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_Lab4_Planning.pdf"><img src="slides/img/cover.png" alt="Lab 4: The Planning Pattern - lecture deck cover" width="880"></a>
+</p>
+
 # Lab 4: The Planning Pattern for Adaptive Timeline Reconstruction
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/lab4_planning_pattern/03_lab_notebook.ipynb)
@@ -9,6 +13,7 @@
 **Pattern:** Planning (plan -> observe -> replan, then conclude)
 **Case:** Timeline reconstruction of a missing phone, `PL-2026-011`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab4_Planning.pdf) : [PowerPoint](slides/SectraTEK_Lab4_Planning.pptx)
 
 ---
 
@@ -84,6 +89,12 @@ confirmed **delivery**, and that only happens if the plan changes when the netwo
 ---
 
 ## 4. The solution: the Planning Pattern
+
+<p align="center">
+  <img src="slides/img/planning_loop.png" alt="The Planning loop: plan, execute steps, revise the plan" width="860"><br>
+  <sub><em>The Planning loop: the model lays out an ordered plan first, executes a step, observes, and revises the remaining steps when a new observation changes the picture.</em></sub>
+</p>
+
 
 ```
             +------- a new observation reshapes the remaining steps -------+
@@ -177,6 +188,12 @@ models available on your key.
 ---
 
 ## 8. Worked example: the plan changes its mind
+
+<p align="center">
+  <img src="slides/img/worked.png" alt="A worked planning example" width="860"><br>
+  <sub><em>The plan changes its mind: an initial plan concluded both communications completed, then revised once the network record showed the device was offline, so delivery is left unconfirmed.</em></sub>
+</p>
+
 
 | | Initial plan (partial evidence) | Revised plan (network added) |
 |---|---|---|

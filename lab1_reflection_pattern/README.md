@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_Lab1_Reflection.pdf"><img src="slides/img/cover.png" alt="Lab 1: The Reflection Pattern - lecture deck cover" width="880"></a>
+</p>
+
 # Lab 1: The Reflection Pattern for Evidence-Bounded Reasoning
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/lab1_reflection_pattern/03_lab_notebook.ipynb)
@@ -9,6 +13,7 @@
 **Pattern:** Reflection (generate, critique, revise, repeat)
 **Case:** Suspected customer-data exfiltration, `DF-2026-017`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab1_Reflection.pdf) : [PowerPoint](slides/SectraTEK_Lab1_Reflection.pptx)
 
 ---
 
@@ -86,6 +91,12 @@ that distinction visible and to use reflection to enforce it.
 ---
 
 ## 4. The solution: the Reflection Pattern
+
+<p align="center">
+  <img src="slides/img/reflection_loop.png" alt="The Reflection loop: generate, critique, revise" width="860"><br>
+  <sub><em>The Reflection loop: the model drafts the report, a reviewer critiques it against the evidence, and it revises - repeating until nothing overreaches.</em></sub>
+</p>
+
 
 The pattern is a loop over three roles, all played by the **same model** with different
 instructions:
@@ -185,6 +196,12 @@ the model's draft, critique, and revision.
 ---
 
 ## 8. Worked example
+
+<p align="center">
+  <img src="slides/img/three_passes.png" alt="One sentence across three passes: draft, critique, revision" width="860"><br>
+  <sub><em>One sentence, three passes: a draft that overclaims, the critique that catches it, and the evidence-bounded revision.</em></sub>
+</p>
+
 
 **Draft v1 (overreaching):**
 

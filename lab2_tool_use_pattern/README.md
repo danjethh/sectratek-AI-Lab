@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_Lab2_ToolUse.pdf"><img src="slides/img/cover.png" alt="Lab 2: The Tool Use Pattern - lecture deck cover" width="880"></a>
+</p>
+
 # Lab 2: The Tool Use Pattern for Evidence Inspection
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/lab2_tool_use_pattern/03_lab_notebook.ipynb)
@@ -9,6 +13,7 @@
 **Pattern:** Tool Use (choose a tool, pass valid arguments, read the observation, reason)
 **Case:** Stolen-vehicle sale preparation, `TU-2026-004`
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab2_ToolUse.pdf) : [PowerPoint](slides/SectraTEK_Lab2_ToolUse.pptx)
 
 ---
 
@@ -82,6 +87,12 @@ disciplined, auditable way to **read** the evidence, not imagine it.
 ---
 
 ## 4. The solution: the Tool Use Pattern
+
+<p align="center">
+  <img src="slides/img/tool_use_loop.png" alt="The Tool Use loop: pick a tool, read the artifact, observe, answer" width="860"><br>
+  <sub><em>The Tool Use loop: the model picks one tool and its arguments, the tool reads the real artifact, the model observes the result, and only then answers.</em></sub>
+</p>
+
 
 ```
             +----------------- need more evidence? call another tool -----------------+
@@ -183,6 +194,12 @@ models available on your key.
 ---
 
 ## 8. Worked example
+
+<p align="center">
+  <img src="slides/img/three_calls.png" alt="Three tool calls build one careful answer" width="860"><br>
+  <sub><em>Three tool calls build one careful answer: each reads a real artifact, so the conclusion cites evidence instead of guessing.</em></sub>
+</p>
+
 
 Three calls turn records into a conclusion:
 
