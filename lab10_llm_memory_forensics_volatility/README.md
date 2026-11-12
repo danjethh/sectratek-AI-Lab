@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Memory_Forensics_Agent.pdf"><img src="slides/img/cover.png" alt="Ask the Memory - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab10_MemoryForensics.pdf"><img src="slides/img/cover.png" alt="Ask the Memory - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 10: Ask the Memory, a memory-forensics agent over Volatility 3
@@ -13,7 +13,7 @@
 **Technique:** A tool-using agent (ReAct) whose toolset is Volatility 3's plugin list
 **Case:** Suspected compromise of a Windows XP workstation, `MF-2026-001` (real public memory image)
 **Runtime:** Google Colab or any hosted Jupyter, Volatility 3, free Groq model, no local install
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_Memory_Forensics_Agent.pdf) : [PowerPoint](slides/SectraTEK_Memory_Forensics_Agent.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab10_MemoryForensics.pdf) : [PowerPoint](slides/SectraTEK_Lab10_MemoryForensics.pptx)
 
 ---
 
@@ -188,7 +188,7 @@ proves it. The agent never reads that file. After working the case, compare:
 | `agentkit.py` | The shared agent core (the think-act-observe loop), as in the other labs. |
 | `case/case_brief.md` | The case: what happened, what was collected, the questions. |
 | `answer_key.md` | The ground truth, for checking the AI's answers. |
-| `slides/` | The lecture deck ([PDF](slides/SectraTEK_Memory_Forensics_Agent.pdf) / [PPTX](slides/SectraTEK_Memory_Forensics_Agent.pptx)). |
+| `slides/` | The lecture deck ([PDF](slides/SectraTEK_Lab10_MemoryForensics.pdf) / [PPTX](slides/SectraTEK_Lab10_MemoryForensics.pptx)). |
 
 The memory image is downloaded at run time and is never stored in this repository.
 

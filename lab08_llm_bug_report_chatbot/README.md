@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_BugReport_Agent.pdf"><img src="slides/img/cover.png" alt="Ask the Bug Report - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab08_BugReport.pdf"><img src="slides/img/cover.png" alt="Ask the Bug Report - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 08: Ask the Bug Report, a forensic chatbot over `adb bugreport`
@@ -12,7 +12,7 @@
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** A tool-using agent (ReAct) over a sectioned text report
 **Runtime:** Google Colab or local, free Qwen via OpenRouter (or local Ollama), no heavy install
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_BugReport_Agent.pdf) : [PowerPoint](slides/SectraTEK_BugReport_Agent.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab08_BugReport.pdf) : [PowerPoint](slides/SectraTEK_Lab08_BugReport.pptx)
 
 ---
 
@@ -71,7 +71,7 @@ Every value in the sample is fictional.
 | `bugkit.py` | The bug-report tools and agent wiring (imported by the app and notebooks). |
 | `agentkit.py` | The shared agent core (model connection, the think-act-observe loop). |
 | `sample_bugreport.txt` | The bundled synthetic sample report. |
-| `slides/` | The lecture deck for this lab ([PDF](slides/SectraTEK_BugReport_Agent.pdf) / [PPTX](slides/SectraTEK_BugReport_Agent.pptx)). |
+| `slides/` | The lecture deck for this lab ([PDF](slides/SectraTEK_Lab08_BugReport.pdf) / [PPTX](slides/SectraTEK_Lab08_BugReport.pptx)). |
 
 ## Questions to try
 

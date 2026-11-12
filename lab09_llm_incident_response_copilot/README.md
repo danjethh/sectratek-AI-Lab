@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_IR_First_Responder.pdf"><img src="slides/img/cover.png" alt="Sectra First Responder - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab09_FirstResponder.pdf"><img src="slides/img/cover.png" alt="Sectra First Responder - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 09: Sectra First Responder, an Incident-Response Chatbot over your Plan and Playbooks
@@ -14,7 +14,7 @@
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** A retrieval-grounded, tool-using agent with a human in the loop
 **Runtime:** Google Colab or local, free Qwen via OpenRouter (or local Ollama)
-**Slides:** [lecture deck (PDF)](slides/SectraTEK_IR_First_Responder.pdf) : [PowerPoint](slides/SectraTEK_IR_First_Responder.pptx)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab09_FirstResponder.pdf) : [PowerPoint](slides/SectraTEK_Lab09_FirstResponder.pptx)
 
 ---
 
