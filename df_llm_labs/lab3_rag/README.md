@@ -1,6 +1,6 @@
 # Practical 3: Building a RAG over Digital-Forensics Reports
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/lab3_rag/03_lab_notebook.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/df_llm_labs/lab3_rag/03_lab_notebook.ipynb)
 
 > Ask plain-English questions over a pile of case reports and get an answer that is grounded in the
 > reports and cites them, instead of a confident guess from the model's memory.

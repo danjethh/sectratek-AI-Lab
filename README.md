@@ -199,7 +199,7 @@ models to forensic tasks:
 
 | Lab | Pattern | What it teaches |
 |---|---|---|
-| [RAG over DF reports](lab3_rag/) | Retrieval-Augmented Generation | Build a RAG from scratch so a model answers questions about case reports, grounded in them and cited. |
+| [RAG over DF reports](df_llm_labs/lab3_rag/) | Retrieval-Augmented Generation | Build a RAG from scratch so a model answers questions about case reports, grounded in them and cited. |
 | Lightweight LLM for DF questions | *(in preparation)* | Use a small, local LLM to answer digital-forensics questions and reference its answers. |
 
 ---
