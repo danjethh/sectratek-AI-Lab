@@ -510,10 +510,10 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
             if any(k in doc.lower() for k in kinds):
                 yield doc, secs
 
-    def _asset_table():
-        """Parse the asset register's markdown table into a list of dict rows."""
+    def _md_rows(doc_kw):
+        """Parse the markdown table in the ISMS doc whose name matches doc_kw into dict rows."""
         rows = []
-        for doc, secs in _isms_docs(("asset",)):
+        for doc, secs in _isms_docs((doc_kw,)):
             header = None
             for _, body in secs:
                 for line in body.splitlines():
@@ -529,6 +529,9 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
                     if len(cells) == len(header):
                         rows.append((doc, dict(zip(header, cells))))
         return rows
+
+    def _asset_table():
+        return _md_rows("asset")
 
     def lookup_asset(name=""):
         """RUN: look up a host/account/system in the ISMS asset register by name or alias, and return
@@ -600,6 +603,37 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         text = "\n\n".join(out)
         return text[:2000] + ("" if len(text) <= 2000 else "\n...[truncated]")
 
+    def lookup_risk(query=""):
+        """RUN: find the ISMS risk-register entry for an asset or incident type (e.g. 'finance
+        workstation', 'FIN-WS-04', or 'ransomware') and return its rating and treatment, so the team
+        can see whether a planned control held or failed and feed that into the after-action review."""
+        rows = _md_rows("risk_register")
+        if not rows:
+            return "No risk register is loaded. Add the ISMS risk register to the knowledge folder."
+        q = (query or "").strip().lower()
+        # bridge an asset name/alias to its asset IDs, so 'finance workstation' matches rows naming FIN-WS-04
+        tokens = {q} if q else set()
+        for _, a in _md_rows("asset"):
+            idc = next((v for k, v in a.items() if "id" in k.lower()), "")
+            alias = (next((v for k, v in a.items() if "alias" in k.lower()), "")
+                     or next((v for k, v in a.items() if "asset" in k.lower() and "id" not in k.lower()), ""))
+            parts = [p.strip().lower() for p in re.split(r"[;,]", alias)]
+            if q and (q in alias.lower() or any(q in p or (len(p) > 3 and p in q) for p in parts if p)):
+                tokens.add(idc.lower())
+        hits = []
+        for doc, r in rows:
+            hay = " ".join(r.values()).lower()
+            if not q or any(t and t in hay for t in tokens):
+                hits.append((doc, r))
+        if not hits:
+            return (f"No risk-register entry matched {query!r}. Use check_policy('risk') to see the "
+                    "register, or ask the risk owner.")
+        out = []
+        for doc, r in hits[:4]:
+            fields = " | ".join(f"{k}: {v}" for k, v in r.items())
+            out.append(f"[{doc}]\n{fields}")
+        return "\n\n".join(out)
+
     # ============================================================ 7. POST-INCIDENT (RUN)
     def after_action_report():
         """RUN: produce a short after-action report from the action log and the incident so far."""
@@ -630,7 +664,8 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         "build_timeline": build_timeline, "extract_iocs": extract_iocs,
         "check_indicators": check_indicators,
         # ISMS / ISO 27001 context (run)
-        "lookup_asset": lookup_asset, "list_assets": list_assets, "check_policy": check_policy,
+        "lookup_asset": lookup_asset, "list_assets": list_assets,
+        "lookup_risk": lookup_risk, "check_policy": check_policy,
         # post-incident
         "after_action_report": after_action_report,
     }

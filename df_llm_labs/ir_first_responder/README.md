@@ -43,7 +43,7 @@ action. Each tool is one of three kinds:
 | **Guidance** | `recommend_collection`, `recommend_containment`, `recommend_eradication`, `recommend_recovery` | DRAFT |
 | **Containment action** | `contain` (isolate_host / disable_account / block_ioc) | SIMULATE (gated) |
 | **Evidence analysis** | `list_evidence`, `read_evidence`, `search_evidence`, `run_sql`, `build_timeline`, `extract_iocs`, `check_indicators` | RUN (read-only) |
-| **ISMS / ISO 27001 context** | `lookup_asset`, `list_assets`, `check_policy` | RUN (read-only) |
+| **ISMS / ISO 27001 context** | `lookup_asset`, `list_assets`, `lookup_risk`, `check_policy` | RUN (read-only) |
 | **Post-incident** | `after_action_report` | RUN |
 
 When the team names a host or system (for example *the finance workstation*), Sectra looks it up in the
