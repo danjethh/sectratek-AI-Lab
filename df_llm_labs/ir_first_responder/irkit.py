@@ -284,7 +284,7 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         words = set(re.findall(r"[a-z]{4,}", (description or "").lower()))
         best, best_score = None, 0
         for doc, secs in knowledge.items():
-            if "plan" in doc.lower():
+            if "playbook" not in doc.lower():   # only incident playbooks are classified (not plan/ISMS/intel)
                 continue
             text = " ".join(t + " " + b for t, b in secs).lower()
             score = sum(1 for w in words if w in text)
@@ -294,12 +294,13 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
                 best, best_score = doc, score
         if not best:
             return "Could not match a playbook. Use list_playbooks and ask the team to clarify the incident."
-        secs = dict(knowledge[best])
         sev = next((b for t, b in knowledge[best] if "classif" in t.lower()), "(severity not stated)")
         first = next((b for t, b in knowledge[best] if any(w in t.lower()
                      for w in ("immediate", "first", "response"))), "(no immediate-response section)")
         return (f"Best-matching playbook: {best}\n\nClassification / severity:\n{sev}\n\n"
-                f"First response steps:\n{first}")
+                f"First response steps:\n{first}\n\n"
+                "Next: if a specific host, account, or system was named, call lookup_asset to get its "
+                "criticality and classification from the ISMS, and let that confirm the severity.")
 
     # ============================================================ 2. NOTIFY / COORDINATE
     def draft_notification(audience="management", incident=""):
@@ -499,7 +500,107 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         action_log.append(f"Watch-list hits: {len(matches)} indicator(s) matched known-bad.")
         return "Known-bad matches:\n" + "\n".join(matches)
 
-    # ============================================================ 6. POST-INCIDENT (RUN)
+    # ============================================================ 6. ISMS / ISO 27001 CONTEXT (RUN)
+    # The copilot can be given the company's ISO 27001 ISMS documents (asset register, risk register,
+    # classification and incident-management policies, Statement of Applicability). These tools read
+    # that context so the response stays aligned with the business value of the asset and company policy.
+    def _isms_docs(kinds):
+        """Yield (doc, sections) for ISMS docs whose file name matches any keyword in `kinds`."""
+        for doc, secs in knowledge.items():
+            if any(k in doc.lower() for k in kinds):
+                yield doc, secs
+
+    def _asset_table():
+        """Parse the asset register's markdown table into a list of dict rows."""
+        rows = []
+        for doc, secs in _isms_docs(("asset",)):
+            header = None
+            for _, body in secs:
+                for line in body.splitlines():
+                    line = line.strip()
+                    if not line.startswith("|"):
+                        continue
+                    cells = [c.strip() for c in line.strip("|").split("|")]
+                    if set("".join(cells)) <= set("-: "):   # the |---| separator row
+                        continue
+                    if header is None:
+                        header = cells
+                        continue
+                    if len(cells) == len(header):
+                        rows.append((doc, dict(zip(header, cells))))
+        return rows
+
+    def lookup_asset(name=""):
+        """RUN: look up a host/account/system in the ISMS asset register by name or alias, and return
+        its owner, classification, criticality, business function and RTO/RPO. Call this whenever the
+        team names a specific asset, so severity and recovery priority match its business value."""
+        q = (name or "").strip().lower()
+        rows = _asset_table()
+        if not rows:
+            return "No asset register is loaded. Add the ISMS asset register to the knowledge folder."
+        if not q:
+            return list_assets()
+        def _alias_of(r):
+            return (next((v for k, v in r.items() if "alias" in k.lower()), "")
+                    or next((v for k, v in r.items() if "asset" in k.lower() and "id" not in k.lower()), ""))
+        hits = []
+        for doc, r in rows:
+            idc = next((v for k, v in r.items() if "id" in k.lower()), "")
+            alias = _alias_of(r)
+            hay = (idc + " | " + alias).lower()
+            parts = [p.strip().lower() for p in re.split(r"[;,]", alias)] + [idc.lower()]
+            if q in hay or any(q in p or (len(p) > 3 and p in q) for p in parts if p):
+                hits.append((doc, r))
+        if not hits:
+            return (f"'{name}' is not in the asset register. Ask the owning team for its classification "
+                    "and criticality; do not guess. Use lookup_asset() with no name to list known assets.")
+        out = []
+        for doc, r in hits[:3]:
+            fields = " | ".join(f"{k}: {v}" for k, v in r.items())
+            out.append(f"[{doc}]\n{fields}")
+        return "\n\n".join(out)
+
+    def list_assets():
+        """RUN: list the assets in the ISMS asset register with their criticality and classification."""
+        rows = _asset_table()
+        if not rows:
+            return "No asset register is loaded."
+        out = []
+        for doc, r in rows:
+            idc = next((v for k, v in r.items() if "id" in k.lower()), "?")
+            alias = (next((v for k, v in r.items() if "alias" in k.lower()), "")
+                     or next((v for k, v in r.items() if "asset" in k.lower() and "id" not in k.lower()), ""))
+            crit = next((v for k, v in r.items() if "critical" in k.lower()), "?")
+            cls = next((v for k, v in r.items() if "classif" in k.lower()), "?")
+            out.append(f"- {idc}: {alias.split(';')[0].strip()}  (criticality: {crit}, {cls})")
+        return "Assets in the register:\n" + "\n".join(out)
+
+    def check_policy(topic=""):
+        """RUN: find the relevant ISMS policy/control for a topic (e.g. 'breach notification',
+        'evidence', 'classification', 'backup', 'risk'), so the response stays within company policy."""
+        words = [w for w in re.findall(r"[a-z]{3,}", (topic or "").lower())]
+        # policy / control / risk docs only; asset data is served by lookup_asset / list_assets
+        kinds = ("policy", "classification", "incident_management", "statement",
+                 "applicability", "soa", "risk_register")
+        scored = []
+        for doc, secs in _isms_docs(kinds):
+            for title, body in secs:
+                tl, bl = title.lower(), body.lower()
+                if not words:
+                    scored.append((1, doc, title, body)); continue
+                s = sum(3 for w in words if w in tl) + sum(1 for w in words if w in bl)
+                if s:
+                    scored.append((s, doc, title, body))
+        if not scored:
+            docs = [d for d, _ in _isms_docs(kinds)]
+            return (f"No ISMS section matched {topic!r}. ISMS documents loaded: "
+                    f"{', '.join(docs) if docs else '(none)'}.")
+        scored.sort(key=lambda h: -h[0])
+        out = [f"[{d} > {t}]\n{b}" for _, d, t, b in scored[:2]]
+        text = "\n\n".join(out)
+        return text[:2000] + ("" if len(text) <= 2000 else "\n...[truncated]")
+
+    # ============================================================ 7. POST-INCIDENT (RUN)
     def after_action_report():
         """RUN: produce a short after-action report from the action log and the incident so far."""
         log = action_log or []
@@ -528,6 +629,8 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         "search_evidence": search_evidence, "run_sql": run_sql,
         "build_timeline": build_timeline, "extract_iocs": extract_iocs,
         "check_indicators": check_indicators,
+        # ISMS / ISO 27001 context (run)
+        "lookup_asset": lookup_asset, "list_assets": list_assets, "check_policy": check_policy,
         # post-incident
         "after_action_report": after_action_report,
     }
@@ -536,9 +639,10 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
 def build_ir_system_prompt(tools, org="SectraTEK"):
     return (
         f"You are Sectra, the incident first responder for {org}. A response team has called you about a "
-        "possible security incident. You work ONLY from the company's incident-response plan and playbooks "
-        "(your knowledge tools) and the artifacts the team collects. This is a training DRILL: anything "
-        "with an external effect is simulated, never real.\n\n"
+        "possible security incident. You work ONLY from the company's incident-response plan, playbooks, "
+        "and ISO 27001 ISMS documents (the asset register, risk register, and policies) - your knowledge "
+        "tools - plus the artifacts the team collects. This is a training DRILL: anything with an external "
+        "effect is simulated, never real.\n\n"
         "WHAT YOU CAN DO - every tool is one of three kinds:\n"
         "  RUN      - you do it yourself (classify, read/search/query artifacts, build a timeline, extract "
         "and check indicators, write the after-action report).\n"
@@ -555,10 +659,15 @@ def build_ir_system_prompt(tools, org="SectraTEK"):
         "HOW TO HANDLE A TURN:\n"
         "1. Work out what the plan/playbooks SAY about the team's situation (classify_incident, "
         "search_playbooks, read_playbook) and tell them, in plain words, citing the section.\n"
-        "2. Then OFFER the concrete next action you can take for them, and say which kind it is. RUN analysis "
+        "2. If a specific host, account, or system is named, call lookup_asset to get its criticality and "
+        "classification from the ISMS, and let that confirm or raise the severity and set the recovery "
+        "priority. Use check_policy to keep your guidance inside company policy (classification, breach "
+        "notification, evidence). Cite the ISMS document just like a playbook. Never recommend anything "
+        "that conflicts with the ISMS, and do not guess an asset's criticality if it is not in the register.\n"
+        "3. Then OFFER the concrete next action you can take for them, and say which kind it is. RUN analysis "
         "yourself when artifacts are present. DRAFT content the team must run. For any SIMULATE action, show "
         "what you will do and ASK for approval first; only call it with approved=true after they agree.\n"
-        "3. Follow the incident through its phases as the playbook dictates: identify -> notify management -> "
+        "4. Follow the incident through its phases as the playbook dictates: identify -> notify management -> "
         "collect -> analyse the collected artifacts -> contain -> eradicate -> recover -> after-action.\n\n"
         "RULES: base every instruction on the plan/playbooks and name the section in evidence_path; do only "
         "one thing per step; never invent commands, data, or indicators; keep replies short and actionable; "

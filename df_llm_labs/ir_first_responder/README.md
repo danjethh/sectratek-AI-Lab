@@ -43,7 +43,13 @@ action. Each tool is one of three kinds:
 | **Guidance** | `recommend_collection`, `recommend_containment`, `recommend_eradication`, `recommend_recovery` | DRAFT |
 | **Containment action** | `contain` (isolate_host / disable_account / block_ioc) | SIMULATE (gated) |
 | **Evidence analysis** | `list_evidence`, `read_evidence`, `search_evidence`, `run_sql`, `build_timeline`, `extract_iocs`, `check_indicators` | RUN (read-only) |
+| **ISMS / ISO 27001 context** | `lookup_asset`, `list_assets`, `check_policy` | RUN (read-only) |
 | **Post-incident** | `after_action_report` | RUN |
+
+When the team names a host or system (for example *the finance workstation*), Sectra looks it up in the
+company's **ISO 27001 asset register** for its criticality, classification, owner, and RTO, so severity
+and recovery priority match the business value of the asset, and uses `check_policy` to keep its guidance
+inside the company's own ISMS policies (classification, breach notification, evidence handling).
 
 Sectra reasons out loud (one short thought per step), uses exactly one tool per step, and cites the
 plan/playbook section behind every instruction - the same discipline as the DF agent.
@@ -74,6 +80,12 @@ plan/playbook section behind every instruction - the same discipline as the DF a
   and splits it into sections (it works best on documents with clear headings; an image-only scanned PDF
   would need OCR first). A sample SectraTEK plan, ransomware/phishing/exfiltration playbooks, and a small
   threat-intel watch-list (`threat_intel.md`) are bundled, grounded in NIST SP 800-61 and SANS PICERL.
+- **ISMS / ISO 27001:** drop your organisation's ISMS documents into `knowledge/` too, so the response
+  stays aligned with your own asset context and policy. A synthetic SectraTEK ISMS pack is bundled: an
+  **asset register** (with criticality, classification, owner, RTO/RPO), a **risk register**, the
+  **information-classification** and **incident-management** policies, and a short **Statement of
+  Applicability** (Annex A control map). The asset register is a simple Markdown table that `lookup_asset`
+  reads by name or alias.
 - **Artifacts:** upload your own logs/CSV/SQLite into the evidence folder (or the UI). Two synthetic
   samples (`security_events.log`, `dns_queries.csv`) are bundled. Everything shipped is fictional.
 
