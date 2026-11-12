@@ -95,7 +95,14 @@ Guardrails, built into `memkit.py`:
 
 - **Whitelist, read-only, no shell.** Only the plugins above can run; arguments are validated (a PID must be
   a number) and passed straight to Volatility, never through a shell.
-- **Run once, cached.** Each plugin runs once per image; later questions reuse the cached JSON.
+- **Only plugins that work on this image.** Not every plugin supports every image. Before the agent
+  starts, `check_plugins()` runs each whitelisted plugin once and keeps only the ones that return data. On
+  the Cridex XP image 16 of 17 work; `netscan` is left out ("This version of Windows is not supported: 5.1"),
+  and the agent is told to use `search_memory` for network indicators. A student's own Windows 10 image
+  would keep `netscan`. A plugin that runs but finds nothing is also left out, and reported to the agent as
+  a result ("nothing found"), so it never wastes a step on a plugin that cannot answer.
+- **Run once, cached.** Each plugin runs once per image (the check above does this); later questions reuse
+  the cached JSON, so answers are fast.
 - **Filtered and capped.** Heavy plugins require a PID or keyword; every result is capped so the model is
   never flooded.
 - **Cite or do not claim.** Every answer must name the plugin and PID. A `malfind` hit is a lead until a
@@ -124,9 +131,11 @@ used for years to teach memory forensics.
 1. Click **Open in Colab** at the top. The notebook installs Volatility 3, writes the lab code, and downloads
    and verifies the image. Nothing is installed on your own computer.
 2. Run Volatility **by hand** first (`windows.info`, `windows.pstree`) to see the raw tool.
-3. Paste a free Groq API key when asked (create one at console.groq.com), then ask Sectra the case questions
+3. Run the plugin check: it tests every plugin on the image (about 90 seconds, once) and shows which ones
+   the agent will get.
+4. Paste a free Groq API key when asked (create one at console.groq.com), then ask Sectra the case questions
    with `talk("...")` and watch which plugin it chooses for each.
-4. Print the findings report, then compare every claim with the answer key.
+5. Print the findings report, then compare every claim with the answer key.
 
 For a chat window instead, open `memory_agent_ui.ipynb` (Colab prints a public link). The first plugin run
 downloads Windows symbol files (about a minute); after that, answers are quick.

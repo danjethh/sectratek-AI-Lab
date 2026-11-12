@@ -228,15 +228,18 @@ class VolRunner:
                 self._log(plugin, extra, label)
                 return rows, plugin, None
             cmd = [_vol_cmd(), "-q", "-r", "json", "-f", self.image, plugin, *extra]
-            p = subprocess.run(cmd, capture_output=True, text=True, timeout=900)
+            # no colour codes: notebooks make Python print coloured tracebacks, which hide the error text
+            env = dict(os.environ, NO_COLOR="1", PYTHON_COLORS="0", TERM="dumb")
+            p = subprocess.run(cmd, capture_output=True, text=True, timeout=900, env=env)
             if p.returncode == 0 and p.stdout.strip().startswith("["):
                 rows = _flatten(json.loads(p.stdout))
                 key.write_text(json.dumps(rows))
                 self.mem[key] = rows
                 self._log(plugin, extra, label)
                 return rows, plugin, None
-            err = (p.stderr or p.stdout or "").strip().splitlines()
-            last_err = " | ".join(err[-3:]) if err else f"exit code {p.returncode}"
+            raw = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", p.stderr or p.stdout or "")   # strip any ANSI codes
+            err = raw.strip().splitlines()
+            last_err = " | ".join(err[-25:]) if err else f"exit code {p.returncode}"
             if "invalid choice" not in last_err:
                 break                       # a real failure, not just an unknown plugin name
         return None, candidates[0], last_err
@@ -277,12 +280,63 @@ def _clip(text):
     return text if len(text) <= MAX_CHARS else text[:MAX_CHARS] + "\n...[truncated - narrow with pid= or keyword=]"
 
 
+# ------------------------------------------------------------------ plugin compatibility check
+def _short_reason(err):
+    """Volatility's own error message (the last 'XxxError: ...'), not the traceback's source lines."""
+    found = [m for m in re.findall(r"(?:Error|Exception):\s*([^|]+)", err or "") if "{" not in m]
+    if found:
+        return found[-1].strip()[:90]
+    parts = [p.strip() for p in (err or "").split("|") if p.strip() and "{" not in p]
+    return (parts[-1] if parts else "failed")[:90]
+
+
+def check_plugins(image, cache_dir=".volcache", verbose=True):
+    """Run every whitelisted plugin ONCE on this image and report which ones return data.
+
+    Not every plugin supports every image (for example, Volatility 3's netscan does not support
+    Windows XP). The lab gives the agent only the plugins that work on THIS image, so it never wastes
+    a step on one that cannot answer. Results are cached, and the runs also warm the plugin cache, so
+    later questions are instant. Returns {name: {"status": ok|empty|unsupported, "rows": n, "note": ...}}."""
+    vr = VolRunner(image, cache_dir)
+    tag = hashlib.sha1(f"{Path(image).resolve()}|{os.path.getsize(image)}".encode()).hexdigest()[:16]
+    key = Path(cache_dir) / f"compat_{tag}.json"
+    if key.exists():
+        result = json.loads(key.read_text())
+    else:
+        result = {}
+        if verbose:
+            print(f"Checking {len(PLUGINS)} plugins against {Path(image).name} (one-time; results are cached)...")
+        for name, spec in PLUGINS.items():
+            rows, used, err = vr.run(spec["vol"])
+            if err:
+                status, note = "unsupported", _short_reason(err)
+            elif not rows:
+                status, note = "empty", "ran, but returned no rows on this image"
+            else:
+                status, note = "ok", f"{len(rows)} rows"
+            result[name] = {"status": status, "plugin": used, "rows": len(rows or []), "note": note}
+            if verbose:
+                print(f"  {'OK ' if status == 'ok' else '-- '} {name:11} {note}")
+        key.write_text(json.dumps(result))
+    if verbose:
+        ok = [n for n, r in result.items() if r["status"] == "ok"]
+        print(f"{len(ok)} of {len(result)} plugins work on this image and become the agent's tools.")
+        for n, r in result.items():
+            if r["status"] != "ok":
+                print(f"  left out: {n} ({r['status']}: {r['note']})")
+    return result
+
+
 # ------------------------------------------------------------------ build the agent's tools
-def make_memory_tools(image, case_dir="case", cache_dir=".volcache", findings=None, ran=None):
+def make_memory_tools(image, case_dir="case", cache_dir=".volcache", findings=None, ran=None,
+                      compatible_only=False, compat=None):
     """Return {tool_name: function}. One tool per whitelisted plugin, plus search_memory, the case brief,
     and the findings log. `findings` collects recorded findings; `ran` collects the Volatility commands
-    used (pass your own lists to keep them across calls, e.g. one chat session)."""
+    used (pass your own lists to keep them across calls, e.g. one chat session).
+    compatible_only=True keeps only the plugins check_plugins() found working on this image."""
     vr = VolRunner(image, cache_dir, ran=ran)
+    if compatible_only:
+        compat = compat or check_plugins(image, cache_dir, verbose=False)
     findings = findings if findings is not None else []
     case_dir = Path(case_dir)
     tools = {}
@@ -305,8 +359,8 @@ def make_memory_tools(image, case_dir="case", cache_dir=".volcache", findings=No
                 if name == "netscan":
                     return ("netscan failed on this image. Volatility 3's network plugins only support Windows "
                             "Vista and later; on Windows XP use search_memory(kind='ip') to find network "
-                            f"indicators inside process memory. (Volatility said: {err[:200]})")
-                return f"{used} failed: {err[:300]}"
+                            f"indicators inside process memory. (Volatility said: {_short_reason(err)})")
+                return f"{used} failed: {_short_reason(err)}"
             if name == "info":                 # drop the local symbol-cache path (noise, not evidence)
                 rows = [r for r in rows if r.get("Variable") != "Symbols"]
             if pid is not None and spec.get("pid"):
@@ -328,6 +382,8 @@ def make_memory_tools(image, case_dir="case", cache_dir=".volcache", findings=No
         return tool
 
     for name, spec in PLUGINS.items():
+        if compat and compat.get(name, {}).get("status") != "ok":
+            continue                         # not working on this image: the agent never sees it
         tools[name] = make_plugin_tool(name, spec)
 
     def search_memory(kind="ip", text="", pid=None):
@@ -350,7 +406,7 @@ def make_memory_tools(image, case_dir="case", cache_dir=".volcache", findings=No
                 return f"pid must be a number, got {pid!r}."
         rows, used, err = vr.run(["windows.vadregexscan"], tuple(extra), label=f"--pattern <{label}>")
         if err:
-            return f"search failed: {err[:300]}"
+            return f"search failed: {_short_reason(err)}"
         seen = {}
         for r in rows:
             t = str(r.get("Text", ""))
@@ -394,6 +450,7 @@ def make_memory_tools(image, case_dir="case", cache_dir=".volcache", findings=No
     tools["record_finding"] = record_finding
     tools["findings_report"] = findings_report
     tools["_runner"] = vr               # not a tool; exposed for notebooks (stripped from the prompt)
+    tools["_compat"] = compat or {}     # not a tool; the compatibility check, summarised in the prompt
     return tools
 
 
@@ -406,12 +463,25 @@ def tool_descriptions(tools):
     return "\n".join(f"- {n}: {(fn.__doc__ or '').strip().splitlines()[0]}" for n, fn in agent_tools(tools).items())
 
 
+def _compat_note(tools):
+    compat = tools.get("_compat") or {}
+    if not compat:
+        return ""
+    left = [f"{n} ({r['status']}: {r['note']})" for n, r in compat.items() if r["status"] != "ok"]
+    note = "PLUGIN CHECK: every plugin tool above was tested on this image and returns data."
+    if left:
+        note += (" Left out: " + "; ".join(left) + ". An 'empty' plugin found nothing on this image, which is "
+                 "itself a result you may report. For network indicators, use search_memory.")
+    return note + "\n\n"
+
+
 def build_memory_system_prompt(tools, case_name="the case"):
     return (
         f"You are Sectra, a memory-forensics analyst working {case_name}. You investigate a Windows memory "
         "image with Volatility 3. You cannot see memory directly: you learn ONLY by running the plugins below, "
         "and you must base every statement on what they return.\n\n"
         "TOOLS (each Volatility plugin is a tool; use exactly ONE per step):\n" + tool_descriptions(tools) + "\n\n"
+        + _compat_note(tools) +
         "HOW TO REPLY: send ONE JSON object and nothing else.\n"
         "To run a plugin:\n"
         '  {"thought": "<one short sentence>", "action": "pstree", "action_input": {}}\n'

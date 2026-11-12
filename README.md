@@ -11,9 +11,9 @@
 
 **Course:** AI for Cybersecurity and Digital Forensics
 **Author and instructor:** Daniel Kwaku Ntiamoah Addai, Mobile Threat Research Lead, SectraTEK Lab ([lab.sectratek.com](https://lab.sectratek.com))
-**Status:** All five labs available.
+**Status:** All five agentic-pattern labs and five LLM-for-forensics labs available.
 
-**New here?** Start with the [Course Overview deck](course_overview/) for a 12-slide tour of the five patterns and how the labs run.
+**New here?** Start with the [Course Overview deck](course_overview/) for a 12-slide tour of the five patterns and how the labs run. Then see the [LLM-for-forensics labs](#further-labs-llms-for-forensics): RAG, device and memory analysis agents, and an incident-response copilot.
 
 ---
 
@@ -29,6 +29,12 @@ synthetic mobile-forensics case. The labs are written for cybersecurity and digi
 students who may be new to programming, and they run entirely in a hosted notebook with a free
 model endpoint. The learning objective is not to automate the examiner, but to give the
 examiner a faster, more honest assistant whose claims stay inside the evidence.
+
+Alongside the five pattern labs, five standalone labs apply language models to real forensic tasks:
+a retrieval-augmented assistant over case reports, tool-using agents over an Android device image,
+an Android bug report, and a Windows memory image (with Volatility 3), and an incident-response copilot
+grounded in a company's own plan, playbooks, and ISO 27001 ISMS. Every one of them cites the evidence
+behind each answer.
 
 ---
 
@@ -154,7 +160,9 @@ The labs use a hosted, OpenAI-compatible endpoint. The default is the **Groq fre
 card. The API key is collected inside the notebook with a hidden prompt (`getpass`) and is never
 written into the file. Because the client is OpenAI-compatible, an instructor can point any lab
 at a different endpoint (a campus server, a different provider, or a local Ollama for offline
-rooms) by changing two values. See [docs/GROQ_SETUP.md](docs/GROQ_SETUP.md).
+rooms) by changing two values. See [docs/GROQ_SETUP.md](docs/GROQ_SETUP.md). The LLM-for-forensics
+labs use the same approach: Groq or OpenRouter (free open models such as Qwen and Llama), or a local
+Ollama model when the evidence must not leave the machine.
 
 ### 5.2 Lab structure
 
@@ -174,11 +182,14 @@ Every lab follows the same four-stage pedagogy:
   <sub><em>Every lab follows the same path: look at the raw evidence first, build the loop by hand so every model call is visible, run the same workflow through a small reusable class, then check each claim against an artifact.</em></sub>
 </p>
 
-### 5.3 Synthetic data
+### 5.3 Teaching data
 
-Every case is **synthetic** and built for teaching. Each lab ships an artifact manifest, a chain
-of custody log, and case-specific artifacts (file events, messages, network, location, and so
-on). No real personal data is used anywhere in this repository.
+The five pattern labs use **synthetic** cases built for teaching. Each ships an artifact manifest, a
+chain of custody log, and case-specific artifacts (file events, messages, network, location, and so
+on). Where a small **real public** sample exists with published ground truth, a lab uses it instead:
+the memory-forensics lab downloads the public Cridex memory image at run time and verifies it against
+pinned hashes, so students can check the AI's answers against a known result. Students can also point
+the labs at their own files. No real personal data is stored anywhere in this repository.
 
 ---
 
@@ -219,7 +230,20 @@ Each lab folder has its own `README.md` written in the same research-paper struc
 ### Further labs: LLMs for forensics
 
 Beyond the five agentic-pattern labs, this repository also hosts standalone labs that apply language
-models to forensic tasks:
+models to forensic tasks. Each has its own deck, Colab notebooks, and (for the chatbots) a Gradio chat UI.
+
+<table>
+  <tr>
+    <td align="center" width="33%"><a href="df_llm_labs/lab3_rag/"><img src="df_llm_labs/lab3_rag/slides/img/cover.png" alt="RAG over DF reports" width="100%"></a><br><sub><b>RAG over DF reports</b></sub></td>
+    <td align="center" width="33%"><a href="df_llm_labs/lab4_qwen/"><img src="df_llm_labs/lab4_qwen/slides/img/cover.png" alt="Forensic agent over an Android image" width="100%"></a><br><sub><b>Agent over an Android image</b></sub></td>
+    <td align="center" width="33%"><a href="df_llm_labs/bug_report_agent/"><img src="df_llm_labs/bug_report_agent/slides/img/cover.png" alt="Ask the Bug Report" width="100%"></a><br><sub><b>Ask the Bug Report</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="df_llm_labs/ir_first_responder/"><img src="df_llm_labs/ir_first_responder/slides/img/cover.png" alt="Sectra First Responder" width="100%"></a><br><sub><b>Sectra First Responder (IR)</b></sub></td>
+    <td align="center"><a href="df_llm_labs/memory_forensics_agent/"><img src="df_llm_labs/memory_forensics_agent/slides/img/cover.png" alt="Ask the Memory" width="100%"></a><br><sub><b>Ask the Memory (Volatility 3)</b></sub></td>
+    <td align="center" valign="middle"><sub>Practicals 1 and 2 (machine learning) live in their own repositories:<br><a href="https://github.com/danjethh/steg_analysis">steganalysis</a> and <a href="https://github.com/danjethh/audio_forensics">audio forensics</a>.</sub></td>
+  </tr>
+</table>
 
 | Lab | Pattern | What it teaches |
 |---|---|---|
@@ -250,8 +274,9 @@ reads the report and owns the final judgment.
 
 ## 9. Limitations and ethics
 
-- **Synthetic cases only.** The data is designed to teach reasoning, not to mirror the full
-  complexity of a real acquisition.
+- **Teaching-scale data.** The synthetic cases teach reasoning; they do not mirror the full complexity
+  of a real acquisition. The real memory sample is a 2012 Windows XP image: small and well documented,
+  but older than current systems (for example, Volatility 3's network plugin does not support XP).
 - **Models change.** Hosted model availability and behavior shift over time. The notebooks
   default to a current model and recover gracefully if a model name is retired.
 - **Not legal advice.** These labs teach method, not courtroom procedure. Real investigations are
@@ -273,7 +298,13 @@ original copyright and permission notice are preserved in
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 The SectraTEK adaptation (hosted zero-install runtime, self-contained notebooks, the slide decks,
-and this documentation) is by Daniel Kwaku Ntiamoah Addai, SectraTEK Lab.
+and this documentation) is by Daniel Kwaku Ntiamoah Addai, SectraTEK Lab. The LLM-for-forensics labs
+in [df_llm_labs/](df_llm_labs/) are original SectraTEK Lab work.
+
+The memory-forensics lab uses [Volatility 3](https://github.com/volatilityfoundation/volatility3)
+(Volatility Foundation, Volatility Software License), installed from PyPI at run time, and the public
+Cridex memory sample listed on the Volatility Foundation's memory-samples page, downloaded at run time.
+Neither is redistributed in this repository.
 
 ---
 

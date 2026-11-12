@@ -20,6 +20,19 @@ model key when asked, and follow it step by step. Nothing is installed locally.
 
 ## Labs
 
+<table>
+  <tr>
+    <td align="center" width="33%"><a href="lab3_rag/"><img src="lab3_rag/slides/img/cover.png" alt="RAG over DF reports" width="100%"></a><br><sub><b>RAG over DF reports</b></sub></td>
+    <td align="center" width="33%"><a href="lab4_qwen/"><img src="lab4_qwen/slides/img/cover.png" alt="Forensic agent over an Android image" width="100%"></a><br><sub><b>Agent over an Android image</b></sub></td>
+    <td align="center" width="33%"><a href="bug_report_agent/"><img src="bug_report_agent/slides/img/cover.png" alt="Ask the Bug Report" width="100%"></a><br><sub><b>Ask the Bug Report</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="ir_first_responder/"><img src="ir_first_responder/slides/img/cover.png" alt="Sectra First Responder" width="100%"></a><br><sub><b>Sectra First Responder (IR)</b></sub></td>
+    <td align="center"><a href="memory_forensics_agent/"><img src="memory_forensics_agent/slides/img/cover.png" alt="Ask the Memory" width="100%"></a><br><sub><b>Ask the Memory (Volatility 3)</b></sub></td>
+    <td align="center" valign="middle"><sub>Each lab: a deck (PDF + PPTX), Colab notebooks, and a README with diagrams.</sub></td>
+  </tr>
+</table>
+
 | # | Lab | What it teaches |
 |---|---|---|
 | 3 | [RAG over DF reports](lab3_rag/) | Build a Retrieval-Augmented Generation system from scratch so a model answers questions about your case reports, grounded in them and with citations. |

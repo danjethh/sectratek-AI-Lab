@@ -38,8 +38,10 @@ def _new_state():
 
 
 def _tools(state):
+    # compatible_only: the agent only gets plugins verified to return data on THIS image
+    # (the check is cached, so this is instant after the first run)
     return mk.make_memory_tools(MEMORY_IMAGE, case_dir="case", cache_dir=".volcache",
-                                findings=state["findings"], ran=state["ran"])
+                                findings=state["findings"], ran=state["ran"], compatible_only=True)
 
 
 def _case_md():
@@ -144,7 +146,19 @@ EXAMPLES = [
 ]
 
 
+def _compat_md():
+    if not os.path.exists(MEMORY_IMAGE):
+        return ""
+    compat = mk.check_plugins(MEMORY_IMAGE, ".volcache", verbose=False)
+    ok = sum(1 for r in compat.values() if r["status"] == "ok")
+    left = [f"`{n}` ({r['note']})" for n, r in compat.items() if r["status"] != "ok"]
+    return (f"**Plugins working on this image:** {ok} of {len(compat)}"
+            + ("  \nLeft out: " + "; ".join(left) if left else ""))
+
+
 def build_demo():
+    if os.path.exists(MEMORY_IMAGE):     # check plugin compatibility once, before the first question
+        mk.check_plugins(MEMORY_IMAGE, ".volcache")
     with gr.Blocks(title="Sectra Memory Analyst") as demo:
         state = gr.State(_new_state())
         gr.Markdown(INTRO)
@@ -156,6 +170,7 @@ def build_demo():
             with gr.Column(scale=1):
                 with gr.Accordion("Case brief", open=False):
                     gr.Markdown(_case_md())
+                gr.Markdown(_compat_md())
                 side = gr.Markdown(_side_md(_new_state()))
         msg.submit(on_user, [msg, chat], [msg, chat]).then(on_bot, [chat, state], [chat, side])
     return demo
