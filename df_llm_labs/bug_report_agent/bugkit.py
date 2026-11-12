@@ -80,7 +80,7 @@ def make_bug_tools(sections):
 
 def build_bug_system_prompt(tools):
     return (
-        "You are Hermes, a digital-forensics examiner's assistant. You are reading an Android BUG REPORT "
+        "You are Sectra, a digital-forensics examiner's assistant. You are reading an Android BUG REPORT "
         "(the output of `adb bugreport`): one large text file split into sections such as device "
         "properties, installed packages, battery, Wi-Fi, accounts, and the system log. You answer the "
         "examiner's question using ONLY what the tools return.\n\n"
