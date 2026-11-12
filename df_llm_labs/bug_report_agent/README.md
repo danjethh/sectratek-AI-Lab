@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="slides/SectraTEK_BugReport_Agent.pdf"><img src="slides/img/cover.png" alt="Ask the Bug Report - lecture deck cover" width="880"></a>
+</p>
+
 # Ask the Bug Report: A Forensic Chatbot over `adb bugreport`
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/df_llm_labs/bug_report_agent/bugreport_chatbot_ui.ipynb)
@@ -8,6 +12,7 @@
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** A tool-using agent (ReAct) over a sectioned text report
 **Runtime:** Google Colab or local, free Qwen via OpenRouter (or local Ollama), no heavy install
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_BugReport_Agent.pdf) : [PowerPoint](slides/SectraTEK_BugReport_Agent.pptx)
 
 ---
 
@@ -26,6 +31,11 @@ report, decides how to find the answer - usually by searching the report or read
 and replies with the answer **and the section it came from**. It is the same agent idea as the device-image
 lab (`../lab4_qwen/`), pointed at a bug report instead of a filesystem.
 
+<p align="center">
+  <img src="slides/img/how_it_works.png" alt="Think, act, observe, then answer with the section" width="860"><br>
+  <sub><em>The same think-act-observe loop as the device-image lab: the model picks one tool, reads what it returns, and repeats until it can answer - citing the section it used.</em></sub>
+</p>
+
 **The three tools:**
 
 | Tool | What it does |
@@ -33,6 +43,11 @@ lab (`../lab4_qwen/`), pointed at a bug report instead of a filesystem.
 | `list_sections()` | List the report's sections (device info, packages, battery, Wi-Fi, accounts, log, ...). |
 | `read_section(name)` | Read one section, by number or by text in its title. |
 | `search_report(keyword)` | Search the whole report for a keyword; returns the matching lines with their section. |
+
+<p align="center">
+  <img src="slides/img/tools.png" alt="Three read-only tools over the report" width="860"><br>
+  <sub><em>Three read-only tools: list the sections, read one, or search the whole report. The model chooses which to call; the code runs it.</em></sub>
+</p>
 
 ## Getting a bug report from a real phone
 
@@ -56,7 +71,7 @@ Every value in the sample is fictional.
 | `bugkit.py` | The bug-report tools and agent wiring (imported by the app and notebooks). |
 | `agentkit.py` | The shared agent core (model connection, the think-act-observe loop). |
 | `sample_bugreport.txt` | The bundled synthetic sample report. |
-| `../lab4_qwen/slides/SectraTEK_Practical4_Chatbots.pptx` | Short deck covering both chatbots (this one and the device-image one). |
+| `slides/` | The lecture deck for this lab ([PDF](slides/SectraTEK_BugReport_Agent.pdf) / [PPTX](slides/SectraTEK_BugReport_Agent.pptx)). |
 
 ## Questions to try
 
