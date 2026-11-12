@@ -8,6 +8,7 @@
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** A tool-using agent (the ReAct pattern), built from scratch
 **Runtime:** Google Colab or any hosted Jupyter, free Qwen model via OpenRouter, no local install
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Practical4_Agent.pdf) : [PowerPoint](slides/SectraTEK_Practical4_Agent.pptx)
 
 ---
 

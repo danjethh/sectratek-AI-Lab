@@ -8,6 +8,7 @@
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** Retrieval-Augmented Generation (RAG), built from scratch
 **Runtime:** Google Colab or any hosted Jupyter, free Groq endpoint, no local install
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_Practical3_RAG.pdf) : [PowerPoint](slides/SectraTEK_Practical3_RAG.pptx)
 
 ---
 

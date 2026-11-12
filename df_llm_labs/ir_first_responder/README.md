@@ -10,6 +10,7 @@
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** A retrieval-grounded, tool-using agent with a human in the loop
 **Runtime:** Google Colab or local, free Qwen via OpenRouter (or local Ollama)
+**Slides:** [lecture deck (PDF)](slides/SectraTEK_IR_First_Responder.pdf) : [PowerPoint](slides/SectraTEK_IR_First_Responder.pptx)
 
 ---
 
