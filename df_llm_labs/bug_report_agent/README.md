@@ -56,6 +56,7 @@ Every value in the sample is fictional.
 | `bugkit.py` | The bug-report tools and agent wiring (imported by the app and notebooks). |
 | `agentkit.py` | The shared agent core (model connection, the think-act-observe loop). |
 | `sample_bugreport.txt` | The bundled synthetic sample report. |
+| `../lab4_qwen/slides/SectraTEK_Practical4_Chatbots.pptx` | Short deck covering both chatbots (this one and the device-image one). |
 
 ## Questions to try
 

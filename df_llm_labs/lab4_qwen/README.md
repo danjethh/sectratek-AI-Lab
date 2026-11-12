@@ -212,7 +212,8 @@ model and the agent on the same question; and one sentence on why citing the fil
 | `chatbot_jupyter.ipynb` | The agent as a **chatbot run in the notebook** (`ask("...")`, no UI framework) |
 | `chatbot_app.py` | The Gradio chatbot as a script, to run locally: `python chatbot_app.py` |
 | `agentkit.py` | The shared agent core (model connection, tools, the think-act-observe loop) |
-| `slides/SectraTEK_Practical4_Agent.pptx` | The lecture deck for this lab |
+| `slides/SectraTEK_Practical4_Agent.pptx` | The lecture deck for the lab |
+| `slides/SectraTEK_Practical4_Chatbots.pptx` | A short deck on the chatbot pieces (both chatbots, UI vs Jupyter, Colab vs Ollama) |
 | `README.md` | This document |
 
 The synthetic Android image is created by the code itself, so there is no evidence to download.
