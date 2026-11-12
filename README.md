@@ -192,6 +192,16 @@ endpoint.
 
 Each lab folder has its own `README.md` written in the same research-paper structure as this one.
 
+### Further labs: LLMs for forensics
+
+Beyond the five agentic-pattern labs, this repository also hosts standalone labs that apply language
+models to forensic tasks:
+
+| Lab | Pattern | What it teaches |
+|---|---|---|
+| [RAG over DF reports](lab3_rag/) | Retrieval-Augmented Generation | Build a RAG from scratch so a model answers questions about case reports, grounded in them and cited. |
+| Lightweight LLM for DF questions | *(in preparation)* | Use a small, local LLM to answer digital-forensics questions and reference its answers. |
+
 ---
 
 ## 8. Discussion
