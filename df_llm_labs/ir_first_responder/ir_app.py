@@ -9,7 +9,7 @@ commands, and reads back any artifacts the team uploads. Everything is a drill; 
 Config via environment (optional):
   PROVIDER / MODEL / OPENROUTER_API_KEY   (as in the other labs)
   KNOWLEDGE_DIR    folder of the plan + playbooks (.md). Default: knowledge
-  ORG              company name shown to the agent. Default: Northwind Labs
+  ORG              company name shown to the agent. Default: SectraTEK
 """
 import os
 import shutil
@@ -19,7 +19,7 @@ import irkit as ik
 
 PROVIDER = os.environ.get("PROVIDER", "openrouter")
 MODEL = os.environ.get("MODEL") or None
-ORG = os.environ.get("ORG", "Northwind Labs")
+ORG = os.environ.get("ORG", "SectraTEK")
 KNOWLEDGE_DIR = os.environ.get("KNOWLEDGE_DIR", "knowledge")
 
 _client = None

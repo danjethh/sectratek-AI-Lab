@@ -1,7 +1,7 @@
 timestamp,host,query,count
 2024-07-28T09:30:00,10.4.2.19,www.microsoft.com,14
 2024-07-28T09:31:00,10.4.2.19,outlook.office365.com,22
-2024-07-28T09:35:00,10.4.2.19,northwind.example,9
+2024-07-28T09:35:00,10.4.2.19,sectratek.example,9
 2024-07-28T09:40:00,10.4.2.19,a7f3k9d2.x1y2.exfil-sync.net,318
 2024-07-28T09:41:00,10.4.2.19,b2c8m4e1.x1y2.exfil-sync.net,297
 2024-07-28T09:42:00,10.4.2.19,update.googleapis.com,6

@@ -82,7 +82,7 @@ def _domains(text):
 
 
 # ----------------------------------------------------------------- the tools
-def make_ir_tools(knowledge, evidence_root, action_log, org="Northwind Labs"):
+def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
     """Build the full IR toolbox. `action_log` is a list the SIMULATE/RUN tools append to."""
     EV = Path(evidence_root)
     EV.mkdir(parents=True, exist_ok=True)
@@ -435,7 +435,7 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="Northwind Labs"):
     }
 
 
-def build_ir_system_prompt(tools, org="Northwind Labs"):
+def build_ir_system_prompt(tools, org="SectraTEK"):
     return (
         f"You are Sectra, the incident first responder for {org}. A response team has called you about a "
         "possible security incident. You work ONLY from the company's incident-response plan and playbooks "
