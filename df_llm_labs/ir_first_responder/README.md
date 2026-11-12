@@ -69,9 +69,11 @@ plan/playbook section behind every instruction - the same discipline as the DF a
 
 ## Bring your own
 
-- **Playbooks:** drop your own `.md` plan/playbooks into the `knowledge/` folder (or upload them in the
-  UI). A sample plan, ransomware/phishing/exfiltration playbooks, and a small threat-intel watch-list
-  (`threat_intel.md`) are bundled.
+- **Playbooks:** drop your own plan/playbooks into the `knowledge/` folder, or upload them in the UI.
+  Real plans are accepted as **PDF, Word (`.docx`), text, or Markdown** - the loader extracts the text
+  and splits it into sections (it works best on documents with clear headings; an image-only scanned PDF
+  would need OCR first). A sample SectraTEK plan, ransomware/phishing/exfiltration playbooks, and a small
+  threat-intel watch-list (`threat_intel.md`) are bundled, grounded in NIST SP 800-61 and SANS PICERL.
 - **Artifacts:** upload your own logs/CSV/SQLite into the evidence folder (or the UI). Two synthetic
   samples (`security_events.log`, `dns_queries.csv`) are bundled. Everything shipped is fictional.
 

@@ -48,22 +48,120 @@ _NOT_TLD = {"exe", "dll", "txt", "log", "csv", "tsv", "7z", "zip", "pf", "hve", 
 
 
 # ----------------------------------------------------------------- knowledge (plan + playbooks)
+# Playbooks and IR plans arrive in several shapes. Real-world plans are usually PDF or Word;
+# the bundled samples are Markdown. load_knowledge reads all of these, extracts plain text, and
+# splits it into (section_title, body) pairs so the keyword tools work the same way on each.
+_DOC_EXT = {".md", ".markdown", ".txt", ".pdf", ".docx"}
+
+# section titles the tools key on - used to recognise headings in plain text (PDF/Word) that
+# has no Markdown "##" marks. Keep this in sync with the tools' title keywords.
+_KNOWN_HEADINGS = (
+    "classification", "indicators", "immediate response", "first response", "response",
+    "evidence collection", "evidence handling", "collection", "containment", "contain",
+    "eradication", "recovery", "notification template", "management notification", "template",
+    "roles", "severity", "scope", "purpose", "detection", "escalation", "communication",
+    "legal", "regulatory", "after-action", "lessons", "decision", "mitre", "contact",
+    "how to use", "overview", "summary", "preparation", "introduction",
+)
+
+
 def load_knowledge(folder):
-    """Read every .md doc in `folder` into {doc_name: [(section_title, body), ...]}."""
+    """Read every supported doc in `folder` (.md/.txt/.pdf/.docx) into
+    {doc_name: [(section_title, body), ...]}. Files that yield no text are skipped."""
     knowledge = {}
-    for p in sorted(Path(folder).glob("*.md")):
-        knowledge[p.name] = _split_sections(p.read_text(errors="replace"))
+    for p in sorted(Path(folder).iterdir()):
+        if not (p.is_file() and p.suffix.lower() in _DOC_EXT):
+            continue
+        text = _read_doc_text(p)
+        if text and text.strip():
+            knowledge[p.name] = _split_sections(text)
     return knowledge
 
 
+def _read_doc_text(path):
+    """Return the plain text of a knowledge doc. PDF via pypdf, Word via python-docx, else read
+    as text. Returns '' if it cannot be read (e.g. a scanned image-only PDF, or a missing lib)."""
+    ext = Path(path).suffix.lower()
+    if ext == ".pdf":
+        return _pdf_text(path)
+    if ext == ".docx":
+        return _docx_text(path)
+    try:
+        return Path(path).read_text(errors="replace")
+    except Exception:
+        return ""
+
+
+def _pdf_text(path):
+    try:
+        from pypdf import PdfReader
+    except Exception:
+        try:
+            from PyPDF2 import PdfReader   # older name, same API
+        except Exception:
+            print(f"[{Path(path).name}: install pypdf to read PDFs - `pip install pypdf`. Skipped.]")
+            return ""
+    try:
+        pages = [(pg.extract_text() or "") for pg in PdfReader(str(path)).pages]
+        text = "\n".join(pages)
+        if not text.strip():
+            print(f"[{Path(path).name}: no extractable text (a scanned/image PDF needs OCR). Skipped.]")
+        return text
+    except Exception as e:
+        print(f"[{Path(path).name}: could not read PDF ({e}). Skipped.]")
+        return ""
+
+
+def _docx_text(path):
+    try:
+        import docx   # python-docx
+    except Exception:
+        print(f"[{Path(path).name}: install python-docx to read Word files - `pip install python-docx`. Skipped.]")
+        return ""
+    try:
+        return "\n".join(p.text for p in docx.Document(str(path)).paragraphs)
+    except Exception as e:
+        print(f"[{Path(path).name}: could not read DOCX ({e}). Skipped.]")
+        return ""
+
+
+def _looks_like_heading(line):
+    """Heuristic heading test for plain text (PDF/Word) with no Markdown marks."""
+    s = line.strip()
+    if not s or len(s) > 80:
+        return False
+    low = s.lower().rstrip(":").strip()
+    if any(low == h or low.startswith(h + " ") or low.startswith(h) and len(low) <= len(h) + 24
+           for h in _KNOWN_HEADINGS):
+        return True
+    # numbered heading: "1. Title", "2.3 Containment"
+    if re.match(r"^\d+(\.\d+)*[.)]?\s+\S", s) and len(s.split()) <= 10 and not s.endswith((".", "!", "?")):
+        return True
+    # a short ALL-CAPS line
+    if s.isupper() and any(c.isalpha() for c in s) and len(s.split()) <= 10:
+        return True
+    return False
+
+
 def _split_sections(text):
+    """Split a document into (title, body) sections. Uses Markdown headings when present
+    (the bundled .md files); falls back to a heading heuristic for plain text from PDF/Word."""
+    lines = text.splitlines()
+    has_md = any(_HEADING.match(ln) for ln in lines)
+
+    def heading_of(line):
+        if has_md:
+            m = _HEADING.match(line)
+            return m.group(2).strip() if m else None
+        return line.strip().rstrip(":").strip() if _looks_like_heading(line) else None
+
     sections, title, cur = [], "(top)", []
-    for line in text.splitlines():
-        m = _HEADING.match(line)
-        if m:
+    for line in lines:
+        h = heading_of(line)
+        if h is not None:
             if cur:
                 sections.append((title, "\n".join(cur).strip()))
-            title, cur = m.group(2).strip(), []
+            title, cur = h, []
         else:
             cur.append(line)
     sections.append((title, "\n".join(cur).strip()))

@@ -8,7 +8,7 @@ commands, and reads back any artifacts the team uploads. Everything is a drill; 
 
 Config via environment (optional):
   PROVIDER / MODEL / OPENROUTER_API_KEY   (as in the other labs)
-  KNOWLEDGE_DIR    folder of the plan + playbooks (.md). Default: knowledge
+  KNOWLEDGE_DIR    folder of the plan + playbooks (.md/.txt/.pdf/.docx). Default: knowledge
   ORG              company name shown to the agent. Default: SectraTEK
 """
 import os
@@ -78,7 +78,7 @@ def load_playbooks(files, state):
         return state, _playbook_status(state)
     d = tempfile.mkdtemp(prefix="playbooks_")
     for f in files:
-        if f and f.lower().endswith(".md"):
+        if f and f.lower().endswith((".md", ".markdown", ".txt", ".pdf", ".docx")):
             shutil.copy(f, d)
     try:
         state = {**state, "knowledge": ik.load_knowledge(d)}
@@ -182,8 +182,10 @@ def build_demo():
                 gr.Examples(examples=EXAMPLES, inputs=msg)
             with gr.Column(scale=1):
                 pb = gr.Markdown(_playbook_status(_new_state()))
-                pb_up = gr.File(label="Replace playbooks (.md, optional)", file_count="multiple",
-                                file_types=[".md"], type="filepath")
+                pb_up = gr.File(label="Replace playbooks (.md / .txt / .pdf / .docx, optional)",
+                                file_count="multiple",
+                                file_types=[".md", ".markdown", ".txt", ".pdf", ".docx"],
+                                type="filepath")
                 ev_up = gr.File(label="Upload collected artifacts (logs, csv, db...)",
                                 file_count="multiple", type="filepath")
                 ev_status = gr.Markdown("*Collected artifacts appear here.*")
