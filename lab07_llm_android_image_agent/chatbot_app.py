@@ -6,16 +6,17 @@ questions in plain English and watch the agent navigate the image and answer wit
 citation. Works in Colab (demo.launch(share=True)) and locally (python chatbot_app.py).
 
 Config via environment variables (all optional):
-  PROVIDER        'openrouter' (default) or 'ollama'
-  MODEL           model id (defaults: openrouter qwen/qwen3-30b-a3b:free, ollama qwen3:8b)
-  OPENROUTER_API_KEY   your free key (OpenRouter only)
+  PROVIDER        'groq' (default), 'openrouter' or 'ollama'
+  MODEL           model id (default: the first free model your key can use, see agentkit.GROQ_MODELS;
+                  qwen3:8b on Ollama)
+  GROQ_API_KEY    your free Groq key (or OPENROUTER_API_KEY for openrouter)
   ALLOW_PYTHON    '1' to enable the optional, advanced run_python tool (off by default)
 """
 import os
 import gradio as gr
 import agentkit as ak
 
-PROVIDER = os.environ.get("PROVIDER", "openrouter")
+PROVIDER = os.environ.get("PROVIDER", "groq")
 MODEL = os.environ.get("MODEL") or None
 ALLOW_PYTHON = os.environ.get("ALLOW_PYTHON", "0") == "1"
 
@@ -44,7 +45,7 @@ def _history_pairs(history):
     pairs, pending = [], None
     for m in history or []:
         if isinstance(m, dict):
-            role, content = m.get("role"), m.get("content", "")
+            role, content = m.get("role"), ak.as_text(m.get("content", ""))
             if role == "user":
                 pending = content
             elif role == "assistant" and pending is not None:
@@ -52,7 +53,7 @@ def _history_pairs(history):
                 pending = None
         elif isinstance(m, (list, tuple)) and len(m) == 2:
             u, a = m
-            pairs.append((u or "", (a or "").split("---")[-1].strip()))
+            pairs.append((ak.as_text(u), ak.as_text(a).split("---")[-1].strip()))
     return pairs[-4:]  # last few turns is plenty of context
 
 
@@ -68,7 +69,7 @@ def respond(message, history):
     yield trace
     final = None
     try:
-        for ev in ak.run_agent_iter(message, client, model, TOOLS, SYSTEM_PROMPT, history=pairs):
+        for ev in ak.run_agent_iter(ak.as_text(message), client, model, TOOLS, SYSTEM_PROMPT, history=pairs):
             if "final_answer" in ev:
                 final = ev
             else:
@@ -101,7 +102,7 @@ EXAMPLES = [
 DESCRIPTION = (
     "A forensic agent over a synthetic Android extraction. Ask a plain-English question; the agent "
     "navigates the image with read-only tools and answers **with the exact file it used**.  \n"
-    f"*Model: `{PROVIDER}` / `{MODEL or 'default Qwen'}`"
+    f"*Model: `{PROVIDER}` / `{MODEL or 'auto-picked free model'}`"
     + ("  ·  run_python tool: ON (advanced)*" if ALLOW_PYTHON else "*"))
 
 

@@ -1,24 +1,97 @@
 """
-agentkit.py - the shared forensic-agent core used by the Lab 4 notebooks and chatbots.
+agentkit.py - the shared forensic-agent core used by the Lab 07-10 notebooks and chatbots.
 
-One place defines: how to connect to a model (OpenRouter or Ollama), how to build the
+One place defines: how to connect to a model (Groq, OpenRouter or Ollama), how to build the
 synthetic Android image, the read-only tools the agent may call, the think-act-observe
-loop, and a conversational wrapper for the chatbots. The chatbot .py apps import this
+loop with its evidence check, and a conversational wrapper for the chatbots. The chatbot .py apps import this
 module; the teaching notebooks embed the same code inline so students open only one file.
 """
+import contextlib
+import inspect
 import json
 import os
 import re
+import shutil
 import sqlite3
+import tempfile
 from pathlib import Path
 
 
-# ======================================================================= model backend
-def connect_model(provider="openrouter", model=None, api_key=None, base_url=None):
-    """Return (client, model_id). provider is 'openrouter' or 'ollama'.
+def as_text(content):
+    """Message content as plain text. Gradio 6 can hand a chat message back as a list of parts
+    ([{'type': 'text', 'text': ...}]) instead of a string; every caller goes through this."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "".join((x.get("text") or x.get("content") or "") if isinstance(x, dict) else str(x)
+                       for x in content)
+    if isinstance(content, dict):
+        return str(content.get("text") or content.get("content") or "")
+    return str(content or "")
 
-    openrouter: free hosted Qwen, needs a key from https://openrouter.ai/keys.
+
+@contextlib.contextmanager
+def sqlite_copy(path):
+    """Open a SQLite evidence file WITHOUT touching it: query a temporary copy (with its -wal and
+    -journal files, so recent rows are included). Opening the original, even read-only, can create
+    -shm/-wal files beside it, and a path with '#' or '?' can be misread as a different file."""
+    path = Path(path)
+    tmp = Path(tempfile.mkdtemp(prefix="sectra_db_"))
+    try:
+        shutil.copy2(path, tmp / "evidence.db")
+        for side in ("-wal", "-journal"):
+            src = path.with_name(path.name + side)
+            if src.exists():
+                shutil.copy2(src, tmp / ("evidence.db" + side))
+        con = sqlite3.connect(tmp / "evidence.db")
+        try:
+            yield con
+        finally:
+            con.close()
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def read_head(path, n=16):
+    """The first n bytes of a file (its 'magic'), without reading the whole file into memory."""
+    with open(path, "rb") as f:
+        return f.read(n)
+
+
+# ======================================================================= model backend
+# Free models that follow the agent's JSON format, best first. Providers retire models from
+# time to time, so connect_model picks the first one your key can actually use, and the
+# notebooks print which one it chose. Put your own choice first, or pass model="...".
+GROQ_MODELS = ["openai/gpt-oss-120b", "qwen/qwen3.8-27b"]
+OPENROUTER_MODELS = ["google/gemma-4-31b-it:free", "nvidia/nemotron-3-ultra-550b-a55b:free"]
+NOT_CHAT = ("whisper", "orpheus", "guard", "tts", "embed")   # speech / safety / embedding models
+
+
+def pick_model(client, preferred, free_only=False):
+    """Return the first preferred model this key can use, else the largest chat model it lists."""
+    try:
+        listed = client.models.list().data
+    except Exception:
+        return preferred[0]          # cannot list models: try the first choice and let it report
+    ids = [m.id for m in listed]
+    for m in preferred:
+        if m in ids:
+            return m
+    chat = [m for m in listed if not any(w in m.id.lower() for w in NOT_CHAT)
+            and (m.id.endswith(":free") or not free_only)]
+    chat.sort(key=lambda m: getattr(m, "context_window", 0) or 0, reverse=True)
+    return chat[0].id if chat else preferred[0]
+
+
+def connect_model(provider="groq", model=None, api_key=None, base_url=None):
+    """Return (client, model_id). provider is 'groq' (default), 'openrouter' or 'ollama'.
+
+    groq:       free hosted models, key from https://console.groq.com/keys (the same key as Labs 01-06).
+    openrouter: free hosted models, key from https://openrouter.ai/keys.
     ollama:     a Qwen model running locally (https://ollama.com), no key, nothing leaves the PC.
+
+    max_retries=8: the free tiers allow a few thousand tokens per minute. When a step goes over,
+    the provider says "try again in N seconds" and the client waits and retries instead of failing.
     """
     from openai import OpenAI
     provider = provider.lower()
@@ -26,11 +99,14 @@ def connect_model(provider="openrouter", model=None, api_key=None, base_url=None
         base_url = base_url or "http://localhost:11434/v1"
         client = OpenAI(base_url=base_url, api_key="ollama")  # Ollama ignores the key
         return client, (model or "qwen3:8b")
-    # default: OpenRouter
-    base_url = base_url or "https://openrouter.ai/api/v1"
-    api_key = api_key or os.environ.get("OPENROUTER_API_KEY", "")
-    client = OpenAI(base_url=base_url, api_key=api_key)
-    return client, (model or "qwen/qwen3-30b-a3b:free")
+    if provider == "openrouter":
+        client = OpenAI(base_url=base_url or "https://openrouter.ai/api/v1",
+                        api_key=api_key or os.environ.get("OPENROUTER_API_KEY", ""), max_retries=8)
+        return client, (model or pick_model(client, OPENROUTER_MODELS, free_only=True))
+    # default: Groq
+    client = OpenAI(base_url=base_url or "https://api.groq.com/openai/v1",
+                    api_key=api_key or os.environ.get("GROQ_API_KEY", ""), max_retries=8)
+    return client, (model or pick_model(client, GROQ_MODELS))
 
 
 # ======================================================================= synthetic image
@@ -149,11 +225,10 @@ def make_tools(root="android_image", allow_python=False):
         t = _resolve(path)
         if not t.exists() or t.is_dir():
             return f"No such file: {path}"
-        head = t.read_bytes()[:16]
+        head = read_head(t)
         if head[:15] == b"SQLite format 3":
-            con = sqlite3.connect(f"file:{t}?mode=ro", uri=True)
-            tables = [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")]
-            con.close()
+            with sqlite_copy(t) as con:
+                tables = [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")]
             return f"[{path} is a SQLite database. Tables: {tables}. Use run_sql with a SELECT query.]"
         ext = t.suffix.lower()
         if ext not in _TEXT_EXT and b"\x00" in head:
@@ -176,11 +251,10 @@ def make_tools(root="android_image", allow_python=False):
         if not q.lower().startswith(("select", "pragma")):
             return "Only read-only SELECT queries are allowed."
         try:
-            con = sqlite3.connect(f"file:{t}?mode=ro", uri=True)
-            cur = con.execute(q)
-            cols = [c[0] for c in cur.description] if cur.description else []
-            rows = cur.fetchmany(50)
-            con.close()
+            with sqlite_copy(t) as con:   # a temporary copy: the evidence file is never opened
+                cur = con.execute(q)
+                cols = [c[0] for c in cur.description] if cur.description else []
+                rows = cur.fetchmany(50)
         except Exception as e:
             return f"SQL error: {e}"
         if not rows:
@@ -193,6 +267,8 @@ def make_tools(root="android_image", allow_python=False):
         needle = (name or "").lower()
         hits = []
         for p in sorted(base.rglob("*")):
+            if p.is_symlink():
+                continue                      # never follow a link out of the image
             if p.is_file() and needle in str(p.relative_to(base)).lower():
                 hits.append(str(p.relative_to(base)))
         if not hits:
@@ -206,7 +282,7 @@ def make_tools(root="android_image", allow_python=False):
         needle = (keyword or "").lower()
         out = []
         for p in sorted(base.rglob("*")):
-            if not p.is_file() or p.suffix.lower() not in _TEXT_EXT:
+            if p.is_symlink() or not p.is_file() or p.suffix.lower() not in _TEXT_EXT:
                 continue
             try:
                 for i, line in enumerate(p.read_text(errors="replace").splitlines(), 1):
@@ -223,8 +299,10 @@ def make_tools(root="android_image", allow_python=False):
 
     if allow_python:
         def run_python(code):
-            """ADVANCED, OPTIONAL: run a short read-only Python snippet. `ROOT` (the image folder,
-            a pathlib.Path) is available. Print what you want to see. Writing to files is blocked."""
+            """ADVANCED, OPTIONAL: run a short Python snippet to inspect the image. `ROOT` (the image
+            folder, a pathlib.Path) is available. Print what you want to see. Do not write or delete."""
+            # NOT a sandbox: the keyword check below stops accidents, not a determined snippet (Python
+            # can still import modules and touch files). Use it only on a COPY of an extraction.
             import io
             import contextlib
             if any(bad in code for bad in ("open(", "write", "unlink", "remove", "rmtree",
@@ -234,7 +312,7 @@ def make_tools(root="android_image", allow_python=False):
             safe = {"ROOT": ROOT, "sqlite3": sqlite3, "json": json, "Path": Path, "re": re}
             try:
                 with contextlib.redirect_stdout(buf):
-                    exec(code, safe)  # teaching tool: sandboxed namespace, read-only guard above
+                    exec(code, safe)  # teaching tool only; see the warning above
             except Exception as e:
                 return f"Python error: {e}\n{buf.getvalue()}"
             out = buf.getvalue().strip()
@@ -245,16 +323,16 @@ def make_tools(root="android_image", allow_python=False):
 
 
 def tool_descriptions(tools):
-    """One line per tool, from its docstring, for the system prompt."""
-    sigs = {
-        "list_dir": "list_dir(path)", "read_file": "read_file(path)",
-        "run_sql": "run_sql(path, query)", "find_files": "find_files(name)",
-        "search_text": "search_text(keyword)", "run_python": "run_python(code)",
-    }
+    """One line per tool for the system prompt: its real signature (so the model uses the right
+    argument names) and the first paragraph of its docstring."""
     lines = []
     for name, fn in tools.items():
-        doc = (fn.__doc__ or "").strip().split("\n")[0]
-        lines.append(f"- {sigs.get(name, name)}: {doc}")
+        try:
+            sig = str(inspect.signature(fn))
+        except (TypeError, ValueError):
+            sig = "()"
+        doc = " ".join((fn.__doc__ or "").strip().split("\n\n")[0].split())
+        lines.append(f"- {name}{sig}: {doc}")
     return "\n".join(lines)
 
 
@@ -278,24 +356,37 @@ def build_system_prompt(tools):
 
 
 def parse_action(raw):
-    """Pull the JSON object out of the model's reply, tolerating <think> blocks and code fences."""
-    text = re.sub(r"<think>.*?</think>", "", raw, flags=re.S)
+    """Pull the JSON object out of the model's reply, tolerating <think> blocks, code fences, and
+    prose before or after it (the first '{' that starts a valid JSON object wins)."""
+    text = re.sub(r"<think>.*?</think>", "", raw or "", flags=re.S)
     text = text.replace("```json", "").replace("```", "")
-    start = text.find("{")
-    if start == -1:
-        return None
-    depth = 0
-    for i in range(start, len(text)):
-        if text[i] == "{":
-            depth += 1
-        elif text[i] == "}":
-            depth -= 1
-            if depth == 0:
-                try:
-                    return json.loads(text[start:i + 1])
-                except Exception:
-                    return None
+    decoder = json.JSONDecoder()
+    for m in re.finditer(r"\{", text):
+        try:
+            obj, _ = decoder.raw_decode(text, m.start())
+        except ValueError:
+            continue
+        if isinstance(obj, dict):
+            return obj
     return None
+
+
+def chat(client, model, messages, max_tokens=None):
+    """One model call. Some hosted models (gpt-oss on Groq) occasionally try a built-in function call
+    instead of writing the JSON reply, which the provider rejects ("model called a tool"); when that
+    happens, ask again with a plain-text reminder instead of stopping the investigation.
+    max_tokens: 1,500 by default, 900 for Qwen (its free tier allows 1,000 reply tokens a minute)."""
+    if max_tokens is None:
+        max_tokens = 900 if "qwen" in str(model).lower() else 1500
+    for attempt in range(3):
+        try:
+            return client.chat.completions.create(model=model, messages=messages, temperature=0,
+                                                  max_tokens=max_tokens).choices[0].message.content or ""
+        except Exception as e:
+            if "called a tool" not in str(e) or attempt == 2:
+                raise
+            messages = messages + [{"role": "user", "content": "Do not use function calling. Reply with "
+                                    "ONE JSON object written as plain text."}]
 
 
 def run_agent_iter(question, client, model, tools, system_prompt=None, max_steps=12, history=None):
@@ -310,11 +401,13 @@ def run_agent_iter(question, client, model, tools, system_prompt=None, max_steps
     for u, a in (history or []):
         messages.append({"role": "user", "content": u})
         messages.append({"role": "assistant", "content": a})
+    question = as_text(question)
     messages.append({"role": "user", "content": f"Investigate and answer this question: {question}"})
 
+    seen = question + " " + " ".join(as_text(a) for _, a in (history or []))  # what it may rely on
+    tools_run, pushbacks, ran = 0, 0, set()
     for step in range(1, max_steps + 1):
-        raw = client.chat.completions.create(
-            model=model, messages=messages, temperature=0).choices[0].message.content
+        raw = chat(client, model, messages)
         messages.append({"role": "assistant", "content": raw})
         move = parse_action(raw)
         if move is None:
@@ -322,20 +415,81 @@ def run_agent_iter(question, client, model, tools, system_prompt=None, max_steps
                              "content": "That was not valid JSON. Reply with ONE JSON object only."})
             continue
         if "final_answer" in move:
-            yield {"final_answer": move["final_answer"], "evidence_path": move.get("evidence_path", "")}
+            answer = move["final_answer"]
+            problem = evidence_check(answer, tools_run, seen, cited=move.get("evidence_path", ""),
+                                     ran=ran, tool_names=list(tools))
+            if problem and pushbacks < MAX_PUSHBACKS:
+                # The harness, not the model, decides whether an answer is backed by evidence.
+                pushbacks += 1
+                yield {"step": step, "thought": "Evidence check: answer sent back",
+                       "action": "evidence_check", "args": {}, "observation": problem}
+                messages.append({"role": "user", "content": problem})
+                continue
+            if problem:   # still unsupported after the push-backs: deliver it, clearly flagged
+                answer = f"{answer}\n\nUNVERIFIED: {problem}"
+            yield {"final_answer": answer, "evidence_path": move.get("evidence_path", "")}
             return
         tool, args = move.get("action"), move.get("action_input", {}) or {}
         if tool not in tools:
             observation = f"Unknown tool {tool!r}. Use one of: {', '.join(tools)}."
+            args = args if isinstance(args, dict) else {}
         else:
+            if not isinstance(args, dict):   # e.g. "action_input": "data/data": give it to the 1st arg
+                params = list(inspect.signature(tools[tool]).parameters)
+                args = {params[0]: args} if params else {}
             try:
                 observation = tools[tool](**args)
+                tools_run += 1                 # only a tool that actually ran counts as evidence
+                ran.add(tool)
             except Exception as e:
-                observation = f"Tool error: {e}"
+                observation = f"Tool error: {e}. Arguments are: {tool}{inspect.signature(tools[tool])}"
+        seen += " " + str(observation)
         yield {"step": step, "thought": move.get("thought", ""),
                "action": tool, "args": args, "observation": observation}
         messages.append({"role": "user", "content": f"Observation:\n{observation}"})
     yield {"final_answer": None, "evidence_path": ""}
+
+
+# ======================================================================= evidence check
+# Limiting the tools to the evidence limits what the model can LOOK AT, not what it can SAY: a
+# model can still write a plausible PID or file name from its training. So before an answer is
+# accepted, the harness checks it: at least one tool must have run for this question, and every
+# specific identifier in the answer must appear in something a tool actually returned (or in the
+# question / earlier answers). Anything else is sent back to the model to confirm or remove.
+MAX_PUSHBACKS = 2
+EVIDENCE_PATTERNS = {
+    "PID": r"\bPIDs?\s*[:#=]?\s*(\d{1,6})\b",
+    "IP address": r"(?<![\d.])((?:\d{1,3}\.){3}\d{1,3})(?![\d.])",
+    "memory address": r"\b(0x[0-9a-fA-F]{5,})\b",
+    "file": r"\b([\w-]+\.(?:exe|dll|sys|apk|db|sqlite|xml|json|plist|log|txt|csv))\b",
+}
+
+
+def evidence_check(answer, tools_run, seen, cited="", ran=(), tool_names=()):
+    """Return a push-back message if the answer is not backed by tool output, else None.
+    cited / ran / tool_names: the answer's evidence line must not name a tool that never ran."""
+    answer = as_text(answer)
+    if tools_run == 0 and not answer.rstrip().endswith("?"):   # a question back to the user claims nothing
+        return ("You answered without running any tool. Do not answer from memory or assumption: "
+                "run the tool that shows this evidence, then answer only from its output.")
+    seen_low = seen.lower()
+    missing = []
+    for kind, pattern in EVIDENCE_PATTERNS.items():
+        for value in re.findall(pattern, str(answer), flags=re.I):
+            found = (re.search(rf"(?<!\d){value}(?!\d)", seen) if kind == "PID"
+                     else value.lower() in seen_low)
+            if not found and f"{kind} {value}" not in missing:
+                missing.append(f"{kind} {value}")
+    if missing:
+        return ("Your answer names " + ", ".join(missing[:8]) + ", which does not appear in any tool "
+                "output you have seen. Run a tool that shows it, or remove it from your answer.")
+    cited_text = as_text(cited)
+    unrun = [t for t in tool_names if t not in ran and re.search(rf"\b{re.escape(t)}\b", cited_text)
+             and not re.search(rf"\b{re.escape(t)}\b", seen)]
+    if unrun:
+        return ("Your evidence cites " + ", ".join(unrun) + ", which you have not run. Cite only the tools "
+                "whose output you actually used, or run them first.")
+    return None
 
 
 def run_agent(question, client, model, tools, system_prompt=None, max_steps=12,

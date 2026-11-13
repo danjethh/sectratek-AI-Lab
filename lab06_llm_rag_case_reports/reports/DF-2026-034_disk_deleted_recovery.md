@@ -1,5 +1,7 @@
 # Case DF-2026-034: Disk Image and Deleted-File Recovery
 
+*Synthetic teaching report. All names, systems, and indicators are fictional.*
+
 Examiner: Analyst C, SectraTEK Lab
 Device: external USB drive (exFAT), 128 GB
 Acquisition: raw dd image, verified by SHA-256

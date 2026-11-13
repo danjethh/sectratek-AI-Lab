@@ -18,7 +18,7 @@
 
 ## Abstract
 
-This practical teaches **Retrieval-Augmented Generation (RAG)**: a way to make a language model answer
+This lab teaches **Retrieval-Augmented Generation (RAG)**: a way to make a language model answer
 from *your* documents rather than from its training memory. The student builds a small RAG system by
 hand over six synthetic digital-forensics case reports, in four visible steps: chunk the reports into
 passages, embed each passage as a vector that captures its meaning, retrieve the passages closest to a
@@ -111,7 +111,7 @@ The notebook builds the pipeline in four visible steps, then compares it against
 |---|---|
 | **Chunk** | Cut each report into short passages, each tagged with its source file (for citations). |
 | **Embed** | Turn each passage into a vector with `all-MiniLM-L6-v2` (a small, free model that runs in the session). Similar meaning gives similar numbers. |
-| **Retrieve** | Embed the question, then score passages by **cosine similarity** (a 0-to-1 closeness score); take the top few. |
+| **Retrieve** | Embed the question, then score passages by **cosine similarity** (a closeness score, usually between 0 and 1); take the top few. |
 | **Generate** | Build a prompt from the retrieved passages and ask the model to answer only from them, cite the report, and say "not covered" when the answer is absent. |
 
 **Why embeddings.** An embedding turns text into numbers so that "the attacker dumped credentials from
@@ -119,7 +119,7 @@ LSASS" and "passwords were stolen from memory" sit close together even though th
 That closeness is what retrieval uses, and it is the semantic win over keyword search.
 
 **Runtime.** Embedding and retrieval run locally in the notebook (no key needed). Only the final
-answer-writing step calls a hosted model (Groq free tier, `llama-3.3-70b-versatile`), with the key
+answer-writing step calls a hosted model (Groq free tier; the setup cell picks the first model on its `PREFERRED` list, currently `openai/gpt-oss-120b`), with the key
 entered via a hidden prompt and never saved. The notebook writes the six reports itself, so it runs
 standalone in Colab with no clone and no install beyond a one-time `pip`.
 

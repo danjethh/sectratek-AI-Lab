@@ -1,5 +1,7 @@
 # Case DF-2026-030: iOS Stalkerware Assessment
 
+*Synthetic teaching report. All names, systems, and indicators are fictional.*
+
 Examiner: Analyst A, SectraTEK Lab
 Device: Apple iPhone 13 (iOS 17)
 Acquisition: logical + sysdiagnose, analyzed with MVT and manual review

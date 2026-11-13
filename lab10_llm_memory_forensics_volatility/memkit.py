@@ -32,15 +32,7 @@ from pathlib import Path
 
 import agentkit as ak
 
-def connect_model(provider="groq", model=None, api_key=None, base_url=None):
-    """Return (client, model_id). provider: 'groq' (default; free key at console.groq.com, the same
-    endpoint as the agentic-pattern labs), 'openrouter' (free Qwen), or 'ollama' (local, no key)."""
-    if provider.lower() == "groq":
-        from openai import OpenAI
-        client = OpenAI(base_url=base_url or "https://api.groq.com/openai/v1",
-                        api_key=api_key or os.environ.get("GROQ_API_KEY", ""))
-        return client, (model or "llama-3.3-70b-versatile")
-    return ak.connect_model(provider, model, api_key, base_url)
+connect_model = ak.connect_model   # 'groq' (default; same free key as Labs 01-06), 'openrouter', 'ollama'
 
 
 run_agent = ak.run_agent
@@ -108,7 +100,9 @@ def fetch_sample(dest="memory", force=False):
         z.extract(SAMPLE["image"], dest)
     zpath.unlink()
     md5 = _md5(image)
-    print(f"Verified {image}: MD5 {md5} ({'matches' if md5 == SAMPLE['image_md5'] else 'DIFFERENT from'} the published sample).")
+    if md5 != SAMPLE["image_md5"]:
+        raise RuntimeError(f"{image} has MD5 {md5}, not the published {SAMPLE['image_md5']}. Not using it.")
+    print(f"Verified {image}: MD5 {md5} (matches the published sample).")
     return str(image)
 
 
@@ -162,6 +156,15 @@ _NOISY = {"__children", "File output", "Hexdump", "Disasm", "Notes"}
 _HEXCOLS = {"Offset", "Offset(V)", "Offset(P)", "Base", "Start VPN", "End VPN", "Physical Address"}
 
 
+def _vol_version():
+    """The installed Volatility 3 version (part of the plugin-check cache key)."""
+    try:
+        from importlib.metadata import version
+        return version("volatility3")
+    except Exception:
+        return "unknown"
+
+
 def _vol_cmd():
     """Find the Volatility 3 command-line entry point installed with `pip install volatility3`."""
     here = Path(sys.executable).with_name("vol")
@@ -178,6 +181,8 @@ def _flatten(rows, depth=0):
     out = []
     for r in rows:
         r = dict(r)
+        if "PID" not in r and "Pid" in r:      # e.g. ldrmodules names its column Pid, not PID
+            r["PID"] = r["Pid"]
         kids = r.pop("__children", []) or []
         r["_depth"] = depth
         out.append(r)
@@ -298,15 +303,18 @@ def check_plugins(image, cache_dir=".volcache", verbose=True):
     a step on one that cannot answer. Results are cached, and the runs also warm the plugin cache, so
     later questions are instant. Returns {name: {"status": ok|empty|unsupported, "rows": n, "note": ...}}."""
     vr = VolRunner(image, cache_dir)
-    tag = hashlib.sha1(f"{Path(image).resolve()}|{os.path.getsize(image)}".encode()).hexdigest()[:16]
+    tag = hashlib.sha1(f"{Path(image).resolve()}|{os.path.getsize(image)}|{_vol_version()}".encode()).hexdigest()[:16]
     key = Path(cache_dir) / f"compat_{tag}.json"
-    if key.exists():
-        result = json.loads(key.read_text())
-    else:
-        result = {}
+    # Only results that WORKED are cached. A failure is re-checked each time, so a one-off problem
+    # (a symbol download that timed out, say) never removes a plugin for good.
+    cached = json.loads(key.read_text()) if key.exists() else {}
+    result = {n: r for n, r in cached.items() if n in PLUGINS and r.get("status") in ("ok", "empty")}
+    todo = [n for n in PLUGINS if n not in result]
+    if todo:
         if verbose:
-            print(f"Checking {len(PLUGINS)} plugins against {Path(image).name} (one-time; results are cached)...")
-        for name, spec in PLUGINS.items():
+            print(f"Checking {len(todo)} plugins against {Path(image).name} (working results are cached)...")
+        for name in todo:
+            spec = PLUGINS[name]
             rows, used, err = vr.run(spec["vol"])
             if err:
                 status, note = "unsupported", _short_reason(err)
@@ -317,7 +325,9 @@ def check_plugins(image, cache_dir=".volcache", verbose=True):
             result[name] = {"status": status, "plugin": used, "rows": len(rows or []), "note": note}
             if verbose:
                 print(f"  {'OK ' if status == 'ok' else '-- '} {name:11} {note}")
-        key.write_text(json.dumps(result))
+        key.parent.mkdir(parents=True, exist_ok=True)
+        key.write_text(json.dumps({n: r for n, r in result.items() if r["status"] in ("ok", "empty")}))
+        result = {n: result[n] for n in PLUGINS}   # keep the whitelist order
     if verbose:
         ok = [n for n, r in result.items() if r["status"] == "ok"]
         print(f"{len(ok)} of {len(result)} plugins work on this image and become the agent's tools.")
@@ -364,12 +374,14 @@ def make_memory_tools(image, case_dir="case", cache_dir=".volcache", findings=No
             if name == "info":                 # drop the local symbol-cache path (noise, not evidence)
                 rows = [r for r in rows if r.get("Variable") != "Symbols"]
             if pid is not None and spec.get("pid"):
-                rows = [r for r in rows if str(r.get("PID")) == str(pid)]
+                rows = [r for r in rows if str(r.get("PID", r.get("Pid"))) == str(pid)]
             if keyword:
                 k = str(keyword).lower()
                 rows = [r for r in rows if k in " ".join(str(v) for v in r.values()).lower()]
             body = _malfind_view(rows) if name == "malfind" else _table(rows, spec.get("cols"), tree=spec.get("tree"))
-            head = f"[{used}{' --pid ' + str(pid) if pid is not None else ''}{' | filter: ' + keyword if keyword else ''}] {len(rows)} rows\n"
+            shown_pid = f" --pid {pid}" if pid is not None and spec.get("pid") else ""
+            shown_kw = f" | filter: {keyword}" if keyword else ""
+            head = f"[{used}{shown_pid}{shown_kw}] {len(rows)} rows\n"
             return _clip(head + body)
 
         args = []

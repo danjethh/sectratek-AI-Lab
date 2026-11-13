@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab03_ReAct.pdf"><img src="slides/img/cover.png" alt="Lab 3: The ReAct Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab03_ReAct.pdf"><img src="slides/img/cover.png" alt="Lab 03: The ReAct Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 03: The ReAct Pattern for Step-by-Step Verification
@@ -20,7 +20,7 @@
 ## Abstract
 
 This lab introduces the **ReAct Pattern**, a loop in which a model reasons out loud, takes one action,
-observes the result, and repeats until it can answer. Where Lab 2 let a model call tools, ReAct adds
+observes the result, and repeats until it can answer. Where Lab 02 let a model call tools, ReAct adds
 the missing half: a visible **Thought** before every **Action**, and an **Observation** that drives
 the next thought. The student answers a narrow timing question about a phone left unattended: was there
 an attempt to send an image through Signal during the interval, and what does the network evidence say
@@ -69,7 +69,8 @@ Reason plus Act) imposes the examiner's discipline: before each tool call the mo
 
 The case is built around a trap. A Signal image-attachment attempt is logged at `14:16 UTC`, inside a
 reported unattended interval of `14:10` to `14:25`. It is tempting to conclude the image was sent. But
-mobile data was offline during the interval and only returned at `14:28`, after it ended. An attempt
+mobile data dropped at `14:15:58`, just before the attempt, and only returned at `14:28`, after the
+interval ended. An attempt
 can be logged with no connection. The right answer distinguishes a recorded **attempt** from a
 confirmed **delivery**, and that distinction only survives if each fact is checked in turn.
 
@@ -131,8 +132,9 @@ The notebook is in two parts, by design.
 
 Each tool answers one question, so the loop must reason its way from one to the next.
 
-**Runtime.** The notebook connects to a free, OpenAI-compatible endpoint (Groq by default, model
-`llama-3.3-70b-versatile`). The key is entered with a hidden prompt and never saved. The notebook writes
+**Runtime.** The notebook connects to a free, OpenAI-compatible endpoint (Groq by default; the setup
+cell picks the first free model on its `PREFERRED` list, currently `qwen/qwen3.8-27b`, which follows
+the `<tool_call>` text format this agent uses). The key is entered with a hidden prompt and never saved. The notebook writes
 the five case artifacts to a local `data/` folder itself, so it runs standalone in Colab with no clone
 and no install. See [../docs/GROQ_SETUP.md](../docs/GROQ_SETUP.md).
 
@@ -178,8 +180,7 @@ and no install. See [../docs/GROQ_SETUP.md](../docs/GROQ_SETUP.md).
 5. Write your own four-part, evidence-bounded answer.
 6. Save and submit the notebook.
 
-No local install is required. If the default model name is ever retired, the setup cell prints the
-models available on your key.
+No local install is required. If a model is ever retired, the setup cell uses the next one on its `PREFERRED` list and prints which it chose.
 
 ---
 
@@ -200,8 +201,8 @@ models available on your key.
 **Draft v1:** "There was a Signal event, so the image was sent during the unattended interval."
 
 **Final v2:** "The artifacts show an attempt to send an image through Signal at 14:16:11 UTC, which is
-inside the unattended interval (14:10 to 14:25). Mobile data was offline during the interval and was
-restored at 14:28:02 UTC, after it ended, so the evidence supports an in-window attempt but does not
+inside the unattended interval (14:10 to 14:25). Mobile data was offline from 14:15:58 UTC and was
+restored at 14:28:02 UTC, after the interval ended, so the evidence supports an in-window attempt but does not
 confirm successful delivery."
 
 Each thought follows from the previous observation, and the final answer stops where the evidence does.
@@ -213,7 +214,7 @@ Each thought follows from the previous observation, and the final answer stops w
 **Reasoning you can audit.** ReAct's real product is not just the answer; it is the trail. A reviewer
 can read the thoughts and observations in order and spot a wrong turn before it becomes a wrong verdict.
 
-**ReAct versus Planning.** ReAct decides the next step only after seeing the last observation. Lab 4's
+**ReAct versus Planning.** ReAct decides the next step only after seeing the last observation. Lab 04's
 Planning Pattern writes a fuller plan up front and revises it. ReAct suits bounded questions where each
 step depends on the one before; planning suits larger problems that benefit from decomposition.
 

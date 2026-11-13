@@ -1,5 +1,7 @@
 # Case DF-2026-017: Suspected Customer-Data Exfiltration
 
+*Synthetic teaching report. All names, systems, and indicators are fictional.*
+
 Examiner: Analyst B, SectraTEK Lab
 Device: Google Pixel 7 (Android 14)
 Acquisition: full file system, Cellebrite UFED 7.64

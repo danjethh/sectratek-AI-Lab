@@ -13,7 +13,7 @@
 
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** A retrieval-grounded, tool-using agent with a human in the loop
-**Runtime:** Google Colab or local, free Qwen via OpenRouter (or local Ollama)
+**Runtime:** Google Colab or any hosted Jupyter, free Groq model (same key as Labs 01-06), no local install (Ollama optional)
 **Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab09_FirstResponder.pdf) : [PowerPoint](slides/SectraTEK_Lab09_FirstResponder.pptx)
 
 ---
@@ -64,7 +64,7 @@ plan/playbook section behind every instruction - the same discipline as the DF a
 4. **Sectra** `recommend_collection` -> the exact tools, commands, and paths from the playbook.
 5. Team uploads `security_events.log` / `dns_queries.csv`. Sectra **runs** `build_timeline` (orders
    the brute-force -> shadow-copy deletion -> log-clear sequence), `extract_iocs` + `check_indicators`
-   (flags `exfil-sync.net`, `su.exe`, `SysUpdateSvc` against the watch-list).
+   (flags `exfil-sync.example`, `su.exe`, `SysUpdateSvc` against the watch-list).
 6. **Sectra** `recommend_containment` / `recommend_eradication` / `recommend_recovery`, offers
    `contain(block_ioc, ...)` on approval, and finally `after_action_report` from the action log.
 
@@ -95,7 +95,7 @@ plan/playbook section behind every instruction - the same discipline as the DF a
 |---|---|
 | `ir_chatbot_ui.ipynb` | **UI version** - a Gradio chat with playbook/evidence upload and a live action log. |
 | `ir_first_responder_jupyter.ipynb` | **Jupyter version** - `talk("...")` in a cell; Sectra remembers the conversation so approvals work. |
-| `ir_app.py` | The Gradio app as a script (`python ir_app.py`). |
+| `ir_app.py` | The Gradio app as a script (optional, needs a local Python with gradio + openai): `python ir_app.py`. |
 | `irkit.py` | The IR tools, the system prompt, and the plan/playbook loader. |
 | `agentkit.py` | The shared agent core (model connection, the think-act-observe loop). |
 | `knowledge/`, `evidence/` | The bundled sample plan + playbooks, and the sample artifacts. |
@@ -133,6 +133,6 @@ Nothing leaves your machine - useful when the playbooks or artifacts are sensiti
 
 ## Credits
 
-Lab design and code by Daniel Kwaku Ntiamoah Addai, SectraTEK Lab. Driven by an open-source **Qwen**
-model via a free, OpenAI-compatible endpoint (OpenRouter) or local Ollama. All plans, playbooks, contacts,
+Lab design and code by Daniel Kwaku Ntiamoah Addai, SectraTEK Lab. Driven by a free open-weight model
+on Groq (OpenAI-compatible), or a local **Qwen** model through Ollama. All plans, playbooks, contacts,
 and artifacts in this lab are synthetic.

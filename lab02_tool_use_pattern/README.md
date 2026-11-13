@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab02_ToolUse.pdf"><img src="slides/img/cover.png" alt="Lab 2: The Tool Use Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab02_ToolUse.pdf"><img src="slides/img/cover.png" alt="Lab 02: The Tool Use Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 02: The Tool Use Pattern for Evidence Inspection
@@ -26,7 +26,7 @@ prepared for an online sale. Three local tools read the gallery, inspect a singl
 case description, and retrieve saved sale drafts. The student runs the tools by hand first (Part A),
 then hands the same tools to a `ToolAgent` that selects the calls on its own (Part B). The lab's core
 discipline is to ground every claim in a tool output and to label the conclusion honestly as
-confirmed, likely, or unconfirmed, with explicit limits. It builds directly on Lab 1: where
+confirmed, likely, or unconfirmed, with explicit limits. It builds directly on Lab 01: where
 Reflection improved how the model wrote, Tool Use improves what the model can actually see.
 
 ---
@@ -50,7 +50,7 @@ Reflection improved how the model wrote, Tool Use improves what the model can ac
 
 ## 1. Background
 
-A forensic conclusion is only as good as the evidence under it. In Lab 1 the model reasoned over text
+A forensic conclusion is only as good as the evidence under it. In Lab 01 the model reasoned over text
 that was pasted into its prompt. That works for a small case, but it has a hard limit: the model can
 only reason about what it was handed, and when asked about anything else it will **fabricate** a
 plausible answer. A model has no eyes on the device. Asked "which photo shows the stolen vehicle?",
@@ -142,8 +142,9 @@ The notebook is in two parts, by design.
 
 Core sequence: `list_media_files` -> `inspect_image_evidence` -> `inspect_listing_records`.
 
-**Runtime.** The notebook connects to a free, OpenAI-compatible endpoint (Groq by default, model
-`llama-3.3-70b-versatile`, which is strong at following the tool-call format). The key is entered with
+**Runtime.** The notebook connects to a free, OpenAI-compatible endpoint (Groq by default; the setup
+cell picks the first free model on its `PREFERRED` list, currently `qwen/qwen3.8-27b`, which follows
+the `<tool_call>` text format this agent uses). The key is entered with
 a hidden prompt and never saved. The notebook writes the six case artifacts to a local `data/` folder
 itself, so it runs standalone in Colab with no clone and no install. See
 [../docs/GROQ_SETUP.md](../docs/GROQ_SETUP.md).
@@ -188,8 +189,7 @@ was never posted. Preparation for sale is **confirmed**; a completed sale is **u
 5. Write your own five-part report and the workflow comparison.
 6. Save and submit the notebook.
 
-No local install is required. If the default model name is ever retired, the setup cell prints the
-models available on your key.
+No local install is required. If a model is ever retired, the setup cell uses the next one on its `PREFERRED` list and prints which it chose.
 
 ---
 

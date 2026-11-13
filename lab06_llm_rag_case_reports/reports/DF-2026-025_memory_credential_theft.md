@@ -1,5 +1,7 @@
 # Case DF-2026-025: Memory Forensics and Credential Theft
 
+*Synthetic teaching report. All names, systems, and indicators are fictional.*
+
 Examiner: Analyst B, SectraTEK Lab
 Device: HP EliteBook laptop (Windows 10)
 Acquisition: live RAM capture (16 GB), analyzed with Volatility 3

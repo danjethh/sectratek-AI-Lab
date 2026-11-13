@@ -17,7 +17,20 @@ run_agent = ak.run_agent
 run_agent_iter = ak.run_agent_iter
 answer_text = ak.answer_text
 
-_SECTION_RE = re.compile(r"^-{3,}\s*(.+?)\s*-{3,}\s*$")
+_SECTION_RE = re.compile(r"^-{3,}\s*(.+?)\s*-{3,}\s*$")          # ------ SYSTEM PROPERTIES ------
+_DUMPSYS_RE = re.compile(r"^DUMP OF SERVICE (?:CRITICAL |HIGH )?(\S+?):\s*$")  # DUMP OF SERVICE wifi:
+
+
+def _section_title(line):
+    """The section title a line starts, or None. A bare row of dashes (dumpsys uses them as
+    separators) is not a title: a title must contain at least two letters."""
+    m = _SECTION_RE.match(line)
+    if m and re.search(r"[A-Za-z]{2,}", m.group(1)):
+        return m.group(1).strip()
+    m = _DUMPSYS_RE.match(line)
+    if m:
+        return f"DUMP OF SERVICE {m.group(1)}"
+    return None
 
 
 def _read_any(path):
@@ -38,10 +51,10 @@ def load_report(path):
     text = _read_any(path)
     sections, title, cur = [], "HEADER", []
     for line in text.splitlines():
-        m = _SECTION_RE.match(line)
-        if m:
+        new_title = _section_title(line)
+        if new_title:
             sections.append((title, "\n".join(cur)))
-            title, cur = m.group(1).strip(), []
+            title, cur = new_title, []
         else:
             cur.append(line)
     sections.append((title, "\n".join(cur)))
@@ -50,22 +63,30 @@ def load_report(path):
 
 def make_bug_tools(sections):
     """Three read-only tools over a parsed bug report."""
-    def list_sections():
-        """List the sections of the bug report, by number and title."""
-        return "\n".join(f"{i}. {t}" for i, (t, _) in enumerate(sections))
+    def list_sections(keyword=""):
+        """List the sections of the bug report, by number and title (optionally only titles that
+        contain keyword). A real report has hundreds of sections, so at most 80 are shown."""
+        key = str(keyword or "").lower()
+        rows = [f"{i}. {t}" for i, (t, _) in enumerate(sections) if key in t.lower()]
+        more = "" if len(rows) <= 80 else f"\n...({len(rows)} sections; pass a keyword to narrow the list)"
+        return ("\n".join(rows[:80]) + more) if rows else f"No section titles contain {keyword!r}."
 
     def read_section(name, max_chars=1800):
         """Read one section, found by its number or by text in its title."""
-        key = (name or "").strip().lower()
+        key = str(name if name is not None else "").strip().lower()
+        if key.isdigit() and int(key) < len(sections):    # a number means that section, never a title match
+            t, body = sections[int(key)]
+            body = body.strip() or "(section is empty)"
+            return f"[{t}]\n" + (body[:max_chars] + ("" if len(body) <= max_chars else "\n...[truncated]"))
         for i, (t, body) in enumerate(sections):
-            if key == str(i) or (key and key in t.lower()):
+            if key and key in t.lower():
                 body = body.strip() or "(section is empty)"
                 return f"[{t}]\n" + (body[:max_chars] + ("" if len(body) <= max_chars else "\n...[truncated]"))
         return f"No section matching {name!r}. Use list_sections to see the titles."
 
     def search_report(keyword, max_hits=25):
         """Search the whole bug report for a keyword; returns [section] matching lines."""
-        key = (keyword or "").lower()
+        key = str(keyword or "").lower()
         out = []
         for t, body in sections:
             for line in body.splitlines():

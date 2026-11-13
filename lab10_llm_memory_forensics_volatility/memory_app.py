@@ -7,7 +7,7 @@ shows the case, the Volatility commands actually run, and the findings recorded 
 
 Config via environment (optional):
   PROVIDER        groq (default) | openrouter | ollama
-  MODEL           model id (default: llama-3.3-70b-versatile on Groq)
+  MODEL           model id (default: the first free model your key can use, see agentkit.GROQ_MODELS)
   GROQ_API_KEY    your free Groq key (or OPENROUTER_API_KEY for openrouter)
   MEMORY_IMAGE    path to the memory image. Default: memory/cridex.vmem (downloaded by the notebook)
 """
@@ -98,6 +98,11 @@ def on_bot(history, state):
         history.append({"role": "assistant", "content": f"Could not connect to the model: {e}"})
         yield history, _side_md(state)
         return
+    if not os.path.exists(MEMORY_IMAGE):
+        history.append({"role": "assistant", "content": f"No memory image at `{MEMORY_IMAGE}`. Run the "
+                        "download cell in the notebook first (or set MEMORY_IMAGE to your own image)."})
+        yield history, _side_md(state)
+        return
     all_tools = _tools(state)
     tools = mk.agent_tools(all_tools)
     prompt = mk.build_memory_system_prompt(all_tools, CASE_NAME)
@@ -133,7 +138,7 @@ INTRO = (
     "A memory-forensics analyst working **case MF-2026-001**. Ask about the memory image in plain English; "
     "Sectra picks a **Volatility 3 plugin**, runs it, reads the output, and answers - citing the plugin and "
     "PID behind every claim. A suspicious hit is a lead until a second plugin backs it up.\n\n"
-    f"*Model: `{PROVIDER}` / `{MODEL or 'default'}`  ·  Every plugin is read-only and runs once (cached).*"
+    f"*Model: `{PROVIDER}` / `{MODEL or 'auto-picked free model'}`  ·  Every plugin is read-only and runs once (cached).*"
 )
 
 EXAMPLES = [

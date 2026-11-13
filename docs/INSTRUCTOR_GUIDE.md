@@ -26,7 +26,7 @@ activity and the *Purpose / Input / Output* notes carry them through.
 
 ## 3. Teaching sequence per lab
 
-Recommended 90-minute block:
+**Labs 01-05 (agentic patterns).** Recommended 90-minute block:
 
 | Phase | Time | What happens |
 |---|---|---|
@@ -38,6 +38,21 @@ Recommended 90-minute block:
 
 If time is short, drop the pre-lab activity and run the notebook directly after the lecture. The
 notebook is self-contained.
+
+**Labs 06-10 (LLMs for forensics).** These have no Part A/Part B split; each is one notebook (Labs 07-10
+also have a chat-UI version). A 90-minute block works as: deck (20 min), notebook walk-through (30 min),
+students' own questions in the chat (25 min), then checking the AI against the evidence (15 min):
+
+| Lab | What students check the AI against | Setup note |
+|---|---|---|
+| 06 RAG | The report passages it retrieved and cited | Downloads a small embedding model (~90 MB) once |
+| 07 Android image | The file it cites in the synthetic image | Writes the synthetic image itself |
+| 08 Bug report | The section it cites in the report | Bundled sample; a student's own report holds personal data |
+| 09 IR copilot | The playbook section behind every step; the action log | Drill only: notifications and containment are simulated |
+| 10 Memory | `answer_key.md` (verified ground truth) | Downloads the ~40 MB Cridex sample and pip-installs Volatility 3 |
+
+In every LLM lab, point students at the `evidence_check` lines in the trace: they show the harness
+sending back an answer that no tool output supports.
 
 ---
 
@@ -55,12 +70,13 @@ the case, and the practical. They are designed for students who are new to the m
 The labs default to the Groq free tier. Before class, confirm students can reach
 `https://console.groq.com/keys` on your network and create a key. If your institution blocks it,
 retarget the labs to a permitted endpoint using the two-value change in
-[GROQ_SETUP.md](GROQ_SETUP.md). Have a backup model name ready in case a default model is retired;
-the notebook will also print available models on demand.
+[GROQ_SETUP.md](GROQ_SETUP.md). If a default model is retired, the notebooks
+move to the next model on their preference list on their own (`PREFERRED` in the Labs 01-07 setup cell,
+`GROQ_MODELS` in `agentkit.py` for Labs 08-10) and print which one they chose.
 
 ---
 
-## 6. Assessment (Lab 01 example)
+## 6. Assessment (Lab 01 example; Labs 02-05 follow the same shape)
 
 Score the model draft, the revised report, and the student's evidence-check answers with a shared
 0 to 4 rubric across four dimensions:
@@ -95,9 +111,12 @@ target-attainment rates and average improvement.
 
 ## 8. Adapting and extending
 
-- **Different case:** the notebook reads its artifacts from a `data/` folder it writes itself. To
-  use your own synthetic case, replace those artifacts and update the case overview.
-- **Different model:** change `BASE_URL` and `MODEL` in the setup cell.
+- **Different case:** the Labs 01-05 notebooks read their artifacts from a `data/` folder they write
+  themselves. To use your own synthetic case, replace those artifacts and update the case overview.
+  Labs 06-10 read `reports/`, `android_image/`, a bug report, `knowledge/` + `evidence/`, or a memory
+  image: replace those (each lab's README says how).
+- **Different model:** change `BASE_URL` and the `PREFERRED` list in the setup cell (Labs 01-07), or
+  pass `model=` to `connect_model` (Labs 08-10).
 - **Offline room:** point the labs at a local Ollama endpoint (see GROQ_SETUP.md); this is the only
   configuration that requires a local install.
 

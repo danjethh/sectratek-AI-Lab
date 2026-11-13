@@ -1,5 +1,7 @@
 # Case DF-2026-039: Network Intrusion and Lateral Movement
 
+*Synthetic teaching report. All names, systems, and indicators are fictional.*
+
 Examiner: Analyst A, SectraTEK Lab
 Scope: corporate network, endpoint and PCAP review
 Acquisition: endpoint logs plus full packet capture (Zeek + Suricata)
@@ -15,9 +17,9 @@ control over DNS. Two servers were accessed before containment.
 - Command-and-control used DNS tunnelling with long, encoded subdomains.
 
 ## Indicators
-- Phishing domain: login.fake-sso-portal.com
+- Phishing domain: login.fake-sso-portal.example
 - C2 technique: DNS tunnelling (encoded TXT queries)
-- C2 domain: c2.fake-telemetry-dns.net
+- C2 domain: c2.fake-telemetry-dns.example
 - Lateral movement: SMB plus remote service creation (technique T1021)
 
 ## Conclusion

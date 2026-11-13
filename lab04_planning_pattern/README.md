@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab04_Planning.pdf"><img src="slides/img/cover.png" alt="Lab 4: The Planning Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab04_Planning.pdf"><img src="slides/img/cover.png" alt="Lab 04: The Planning Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 04: The Planning Pattern for Adaptive Timeline Reconstruction
@@ -27,7 +27,7 @@ evidence, and a withheld **network-status record** then arrives and forces a rep
 offline around the time of a WhatsApp image attachment, so an attachment recorded inside the window
 cannot be called a confirmed delivery. The student walks the plan-replan loop by hand (Part A), then
 runs it through a packaged `PlanningAgent` that builds, self-reviews, and revises a plan (Part B). The
-lab contrasts Planning with Lab 3's ReAct: ReAct chooses the next step reactively, while Planning sets
+lab contrasts Planning with Lab 03's ReAct: ReAct chooses the next step reactively, while Planning sets
 an order up front and re-examines the whole path when the evidence shifts.
 
 ---
@@ -129,11 +129,11 @@ The notebook is in two parts, by design.
   `[[OK]]` or a replan limit is reached). You compare its revision with your manual one.
 
 **Note on this lab's scope.** The notebook supplies the new observation deliberately; it does not choose
-the next evidence to inspect. In the repository, `03b` and `03c` combine a planner with a `ReactAgent`
+the next evidence to inspect. In the upstream course, later notebooks combine a planner with a `ReactAgent`
 that gathers each observation with tools. This hosted notebook teaches the core plan-replan loop.
 
-**Runtime.** The notebook connects to a free, OpenAI-compatible endpoint (Groq by default, model
-`llama-3.3-70b-versatile`). The key is entered with a hidden prompt and never saved. The notebook writes
+**Runtime.** The notebook connects to a free, OpenAI-compatible endpoint (Groq by default; the setup
+cell picks the first free model on its `PREFERRED` list, currently `openai/gpt-oss-120b`). The key is entered with a hidden prompt and never saved. The notebook writes
 the six case artifacts to a local `data/` folder itself, so it runs standalone in Colab with no clone
 and no install. See [../docs/GROQ_SETUP.md](../docs/GROQ_SETUP.md).
 
@@ -154,7 +154,8 @@ and no install. See [../docs/GROQ_SETUP.md](../docs/GROQ_SETUP.md).
 | 21:08:14 | outgoing call to +1-555-0184, 42 seconds |
 | 21:10:00 | mobile data drops offline |
 | 21:12:07 | WhatsApp chat opened |
-| 21:13:12 | a message with an image attachment is recorded, then deleted |
+| 21:13:12 | an outbound message with an image placeholder is deleted |
+| 21:13:19 | an image attachment record appears in the app cache |
 | 21:25:31 | device locked (end of the missing period) |
 | 21:27:04 | mobile data restored (after the window) |
 
@@ -182,8 +183,7 @@ and no install. See [../docs/GROQ_SETUP.md](../docs/GROQ_SETUP.md).
 5. Write your own timeline and decision.
 6. Save and submit the notebook.
 
-No local install is required. If the default model name is ever retired, the setup cell prints the
-models available on your key.
+No local install is required. If a model is ever retired, the setup cell uses the next one on its `PREFERRED` list and prints which it chose.
 
 ---
 
@@ -225,7 +225,7 @@ one-step-at-a-time questions. Planning sets an order up front and re-examines th
 larger problems with dependencies. The two compose: a planner picks the sequence, ReAct executes each
 step.
 
-**Activity is not delivery.** As in Labs 2 and 3, the hard discipline is stopping at what the records
+**Activity is not delivery.** As in Labs 02 and 03, the hard discipline is stopping at what the records
 support. The offline window around the attachment keeps "delivered" off the page. Holding that line is
 the examiner's judgment, and a revisable plan makes it defensible.
 

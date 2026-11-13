@@ -6,16 +6,17 @@ synthetic sample. The agent navigates the report's sections and answers with the
 it used. Works in Colab (launch(share=True)) and locally (python bugreport_app.py).
 
 Config via environment (optional):
-  PROVIDER        'openrouter' (default) or 'ollama'
-  MODEL           model id (defaults to a free Qwen on OpenRouter, qwen3:8b on Ollama)
-  OPENROUTER_API_KEY   your free key (OpenRouter only)
+  PROVIDER        'groq' (default), 'openrouter' or 'ollama'
+  MODEL           model id (default: the first free model your key can use; qwen3:8b on Ollama)
+  GROQ_API_KEY    your free Groq key (or OPENROUTER_API_KEY for openrouter)
   BUGREPORT_PATH  path to the sample bug report (default: sample_bugreport.txt)
 """
 import os
 import gradio as gr
 import bugkit as bk
+from agentkit import as_text
 
-PROVIDER = os.environ.get("PROVIDER", "openrouter")
+PROVIDER = os.environ.get("PROVIDER", "groq")
 MODEL = os.environ.get("MODEL") or None
 SAMPLE = os.environ.get("BUGREPORT_PATH", "sample_bugreport.txt")
 
@@ -46,16 +47,16 @@ def _pairs(history):
     pending = None
     for m in history or []:
         if m.get("role") == "user":
-            pending = m.get("content")
+            pending = as_text(m.get("content"))
         elif m.get("role") == "assistant" and pending is not None:
-            out.append((pending, (m.get("content") or "").split("---")[-1].strip()))
+            out.append((pending, as_text(m.get("content")).split("---")[-1].strip()))
             pending = None
     return out[-4:]
 
 
 def on_upload(filepath, state):
     if not filepath:
-        return state, "No file chosen. Using the bundled sample."
+        return _load_sample_state(), "No file chosen. Using the bundled sample."
     try:
         sections = bk.load_report(filepath)
         name = os.path.basename(filepath)
@@ -65,13 +66,14 @@ def on_upload(filepath, state):
 
 
 def on_user(message, history):
+    message = as_text(message)
     if not message.strip():
         return "", history
     return "", (history or []) + [{"role": "user", "content": message}]
 
 
 def on_bot(history, state):
-    q = history[-1]["content"]
+    q = as_text(history[-1]["content"])  # Gradio 6 may hand content back as a list of parts
     try:
         client, model = get_client()
     except Exception as e:
@@ -123,7 +125,7 @@ def build_demo():
             "A forensic agent over an Android **bug report** (`adb bugreport`). Upload your own report "
             "(.txt or .zip) or use the bundled synthetic sample, then ask questions in plain English. "
             "The agent searches the report's sections and answers **with the section it used**.\n\n"
-            f"*Model: `{PROVIDER}` / `{MODEL or 'default Qwen'}`*")
+            f"*Model: `{PROVIDER}` / `{MODEL or 'auto-picked free model'}`*")
         with gr.Row():
             upload = gr.File(label="Upload a bug report (.txt or .zip)", file_types=[".txt", ".zip"],
                              type="filepath", scale=3)

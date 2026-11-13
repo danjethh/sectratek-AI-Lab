@@ -11,7 +11,7 @@
 
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** A tool-using agent (ReAct) over a sectioned text report
-**Runtime:** Google Colab or local, free Qwen via OpenRouter (or local Ollama), no heavy install
+**Runtime:** Google Colab or any hosted Jupyter, free Groq model (same key as Labs 01-06), no local install (Ollama optional)
 **Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab08_BugReport.pdf) : [PowerPoint](slides/SectraTEK_Lab08_BugReport.pptx)
 
 ---
@@ -26,7 +26,7 @@ language model forensic questions and getting grounded, cited answers.
 
 ## What it does
 
-You ask a question in plain English. A lightweight **Qwen** model, given three read-only tools over the
+You ask a question in plain English. A free hosted model, given three read-only tools over the
 report, decides how to find the answer - usually by searching the report or reading the right section -
 and replies with the answer **and the section it came from**. It is the same agent idea as the device-image
 lab (`../lab07_llm_android_image_agent/`), pointed at a bug report instead of a filesystem.
@@ -49,7 +49,10 @@ lab (`../lab07_llm_android_image_agent/`), pointed at a bug report instead of a 
   <sub><em>Three read-only tools: list the sections, read one, or search the whole report. The model chooses which to call; the code runs it.</em></sub>
 </p>
 
-## Getting a bug report from a real phone
+## Getting a bug report from a real phone (optional)
+
+This needs `adb` (Android platform-tools) on a computer, so it is optional: the bundled sample is enough
+for the lab.
 
 1. On the phone: enable **Developer Options** (tap Build number 7 times), then turn on **USB debugging**.
 2. On a computer with the Android platform tools: connect the phone and run
@@ -67,7 +70,7 @@ Every value in the sample is fictional.
 |---|---|
 | `bugreport_chatbot_ui.ipynb` | **UI version** - launches a Gradio chat window with a file-upload box (Colab gives a public link). |
 | `bugreport_chatbot_jupyter.ipynb` | **Jupyter version** - call `ask("...")` in a cell and read the agent's reasoning and cited section. |
-| `bugreport_app.py` | The Gradio app as a script, to run locally: `python bugreport_app.py`. |
+| `bugreport_app.py` | The Gradio app as a script (optional, needs a local Python with gradio + openai): `python bugreport_app.py`. |
 | `bugkit.py` | The bug-report tools and agent wiring (imported by the app and notebooks). |
 | `agentkit.py` | The shared agent core (model connection, the think-act-observe loop). |
 | `sample_bugreport.txt` | The bundled synthetic sample report. |
@@ -93,8 +96,13 @@ The agent's tools are **read-only**: it can list, read, and search the report, b
 model chooses which tool to run; our code runs it. Answers are grounded in the report and cite their
 section, so you can always open that section and check. All sample data is synthetic.
 
+**Your own bug report holds personal data:** account emails, Wi-Fi network names, locations, and app
+usage. Whatever you upload is sent to the hosted model. For a personal report, use the Jupyter version or
+a local Ollama model, and never share the UI's public link: anyone who has it can use the chat (and your
+key's quota) and see what you uploaded.
+
 ## Credits
 
 Lab design and code by Daniel Kwaku Ntiamoah Addai, SectraTEK Lab. The idea of pointing a small local
-model at a whole Android artifact and asking a plain-English question is due to Frank Xu. Driven by an
-open-source **Qwen** model via a free, OpenAI-compatible endpoint (OpenRouter) or local Ollama.
+model at a whole Android artifact and asking a plain-English question is due to Frank Xu. Driven by a
+free open-weight model on Groq (OpenAI-compatible), or a local **Qwen** model through Ollama.

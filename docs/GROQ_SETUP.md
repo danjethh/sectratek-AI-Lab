@@ -24,8 +24,25 @@ run on a free service today and a campus server tomorrow with a two-line change.
 | OpenAI-compatible | The lab's client code works without modification. |
 | Fast enough for class | Responses return in seconds, so a reflection loop finishes quickly. |
 
-The default model is `llama-3.3-70b-versatile`, a strong open model. If that name is ever retired,
-the notebook prints the models currently available on your key so you can pick another.
+Each notebook keeps a short list of free models, best first (`PREFERRED` in the setup cell of Labs
+01-07, `GROQ_MODELS` in `agentkit.py` for Labs 08-10) (currently
+`openai/gpt-oss-120b`, then `qwen/qwen3.8-27b`), and uses the first one your key can reach. Groq retires
+models from time to time; when that happens the notebook simply moves to the next name on the list and
+prints which model it chose. If none of them is available, it prints the models your key can use so you
+can put one first in `PREFERRED`.
+
+**Which model each lab prefers.** Labs 02, 03 and 05 put `qwen/qwen3.8-27b` first: their agents write
+`<tool_call>` tags as plain text, which Qwen follows, while gpt-oss tends to plan the call silently and
+return an empty reply. Every other lab puts `openai/gpt-oss-120b` first.
+
+**Free-tier limits.** Each model has its own daily budget of about 200,000 tokens per key, which covers a
+day of labs for one student but not repeated full runs; the error says how long until it resets. Using
+different models in different labs spreads the load. Per minute, the free tier allows roughly 8,000
+tokens per model (Qwen: 1,000 reply tokens). An agent step sends
+the whole conversation so far, so a multi-step investigation can pass that limit. The notebooks handle it:
+the client waits and retries when Groq says "try again in N seconds" (`max_retries=8`), and every reply is
+capped at 1,500 tokens (900 for Qwen) so a single request stays under the limit. A step that pauses for a few seconds is
+normal.
 
 ---
 
@@ -47,9 +64,11 @@ paste it again. That is intended: it keeps the key out of the saved file you sub
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `Could not use llama-3.3-70b-versatile` | The model name changed. | The cell prints available models. Set `MODEL` to one of them (for example `llama-3.1-8b-instant`) and re-run. |
+| `None of PREFERRED is on your key right now` | Every preferred model was retired. | The cell lists the models your key can use. Put a chat model (not `whisper`, `orpheus` or a `guard` model) first in `PREFERRED` and re-run. |
 | `AuthenticationError` / 401 | Key is wrong or has a stray space. | Re-copy the key from the Groq console and paste again. |
-| `RateLimitError` / 429 | Free-tier limit hit for the minute. | Wait a minute and re-run the cell. Keep `n_steps` small in the packaged run. |
+| `RateLimitError` / 429 | Free-tier tokens-per-minute limit, still hit after 8 automatic retries. | Wait a minute and re-run the cell. Keep the step cap (`n_steps`, `max_replans` or `max_steps`) small. |
+| `429 ... tokens per day (TPD)` | That model's daily budget is used up. | Wait for the reset time in the message, or put the other model first in `PREFERRED` and re-run the setup cell. |
+| `413 Request too large` | One request (prompt plus reply limit) is bigger than the per-minute limit. | Re-run the connection cell (it sets the 1,500-token reply cap), then ask a narrower question. |
 | The prompt for the key does not appear | A cell was skipped. | Run the setup cells in order from the top. |
 
 Never paste your key into a normal code cell or commit it to a repository. Only use the hidden

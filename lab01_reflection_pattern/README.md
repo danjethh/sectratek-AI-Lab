@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab01_Reflection.pdf"><img src="slides/img/cover.png" alt="Lab 1: The Reflection Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab01_Reflection.pdf"><img src="slides/img/cover.png" alt="Lab 01: The Reflection Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 01: The Reflection Pattern for Evidence-Bounded Reasoning
@@ -126,7 +126,7 @@ The notebook is in two parts, by design.
   analyst, generate a draft, create a reviewer, critique the draft, feed the critique back, and
   revise. Every step has a short *Purpose / Input / Output* note so the mechanism is never hidden.
 - **Part B: run the packaged agent.** The same workflow runs through a small `ReflectionAgent`
-  class (a vendored copy of the course's `agentic_patterns` library). It manages the two chat
+  class (a self-contained copy adapted from The Neural Maze's `agentic_patterns` library). It manages the two chat
   histories, applies the `[[OK]]` stop rule, and bounds the number of cycles. The point is to show
   that the hand-built loop and the reusable class are the same idea at two levels of abstraction.
 
@@ -185,8 +185,7 @@ prove that the file reached any recipient. That gap is the heart of the lab.
 5. Complete the **Evidence check** cell: answer the four questions in your own words.
 6. Save and submit the notebook.
 
-No local install is required. If the default model name is ever retired, the setup cell prints the
-models available on your key so you can pick a current one.
+No local install is required. If a model is ever retired, the setup cell uses the next one on its `PREFERRED` list and prints which it chose.
 
 **Before the notebook (optional):** if your instructor assigns the pre-lab group activity, examine
 the raw `data/` files as a team and record a human baseline (timeline, claims, and what the

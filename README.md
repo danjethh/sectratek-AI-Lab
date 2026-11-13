@@ -138,15 +138,15 @@ mobile-forensics case, with three design commitments:
 
 | Pattern | The investigator's habit it mirrors | Lab |
 |---|---|---|
-| **Reflection** | Draft, self-critique, revise. | [Lab 1](lab01_reflection_pattern/) |
-| **Tool Use** | Inspect the artifact with a real tool instead of guessing. | [Lab 2](lab02_tool_use_pattern/) |
-| **ReAct** | Reason one step, act, observe, repeat. | [Lab 3](lab03_react_pattern/) |
-| **Planning** | Break a hard question into checkable steps. | [Lab 4](lab04_planning_pattern/) |
-| **Multiagent** | Split roles, compare findings, reconcile. | [Lab 5](lab05_multiagent_pattern/) |
+| **Reflection** | Draft, self-critique, revise. | [Lab 01](lab01_reflection_pattern/) |
+| **Tool Use** | Inspect the artifact with a real tool instead of guessing. | [Lab 02](lab02_tool_use_pattern/) |
+| **ReAct** | Reason one step, act, observe, repeat. | [Lab 03](lab03_react_pattern/) |
+| **Planning** | Break a hard question into checkable steps. | [Lab 04](lab04_planning_pattern/) |
+| **Multiagent** | Split roles, compare findings, reconcile. | [Lab 05](lab05_multiagent_pattern/) |
 
 <p align="center">
   <img src="docs/img/five_patterns.png" alt="The five agentic patterns: Reflection, Tool Use, ReAct, Planning, Multiagent" width="900"><br>
-  <sub><em>The five patterns build on each other: Reflection, Tool Use, ReAct, Planning, then Multiagent. Start at Lab 1 and go in order.</em></sub>
+  <sub><em>The five patterns build on each other: Reflection, Tool Use, ReAct, Planning, then Multiagent. Start at Lab 01 and go in order.</em></sub>
 </p>
 
 ---
@@ -161,8 +161,16 @@ card. The API key is collected inside the notebook with a hidden prompt (`getpas
 written into the file. Because the client is OpenAI-compatible, an instructor can point any lab
 at a different endpoint (a campus server, a different provider, or a local Ollama for offline
 rooms) by changing two values. See [docs/GROQ_SETUP.md](docs/GROQ_SETUP.md). The LLM-for-forensics
-labs use the same approach: Groq or OpenRouter (free open models such as Qwen and Llama), or a local
-Ollama model when the evidence must not leave the machine.
+labs use the same approach and the same free Groq key (OpenRouter also works), or a local Ollama Qwen
+model when the evidence must not leave the machine.
+
+**Evidence-bounded by the harness, not just the prompt.** Giving a model read-only tools over the evidence
+limits what it can *look at*, not what it can *say*: in testing, a model asked about a memory image answered
+without running a single plugin and invented a hidden process and a malicious DLL. So the shared agent loop
+checks every answer before accepting it. At least one tool must have run for the question, and every PID,
+IP address, memory address, and file name in the answer must appear in something a tool actually returned.
+If not, the answer goes back to the model to confirm with a tool or remove; if it still cannot, it is
+delivered marked UNVERIFIED. Students see each check in the reasoning trace.
 
 ### 5.2 Lab structure
 
@@ -186,7 +194,9 @@ Every lab follows the same four-stage pedagogy:
 
 The five pattern labs use **synthetic** cases built for teaching. Each ships an artifact manifest, a
 chain of custody log, and case-specific artifacts (file events, messages, network, location, and so
-on). Where a small **real public** sample exists with published ground truth, a lab uses it instead:
+on). Labs 06-09 are synthetic as well (case reports, an Android image, a bug report, an IR plan,
+playbooks, ISMS documents, and logs); their indicators use reserved documentation addresses and
+`.example` domains, so none points at a real system. Where a small **real public** sample exists with published ground truth, a lab uses it instead:
 the memory-forensics lab downloads the public Cridex memory image at run time and verifies it against
 pinned hashes, so students can check the AI's answers against a known result. Students can also point
 the labs at their own files. No real personal data is stored anywhere in this repository.
@@ -198,16 +208,17 @@ the labs at their own files. No real personal data is stored anywhere in this re
 **Students (the fast path):**
 
 1. New to the course? Skim the [Course Overview deck](course_overview/) first. Then open the lab you
-   want (start with [Lab 1](lab01_reflection_pattern/)) and click the
+   want (start with [Lab 01](lab01_reflection_pattern/)) and click the
    **Open in Colab** badge in its notebook.
 2. Run the setup cells. When prompted, paste a free Groq API key
    (see [docs/GROQ_SETUP.md](docs/GROQ_SETUP.md)). The key is hidden and is not saved.
-3. Work through Part A and Part B, then answer the evidence-check questions.
+3. Work through the notebook's parts in order, then answer its evidence-check or write-up questions.
 4. Save your notebook (`File -> Download -> Download .ipynb`, or save a copy to Drive) and submit
    as your instructor directs.
 
 You do not need to install Python, clone this repository, or own a GPU. The notebook writes its
-own data and defines everything it needs.
+own data and defines everything it needs (Lab 10 also downloads a small public memory image at run
+time).
 
 **Instructors:** see [docs/INSTRUCTOR_GUIDE.md](docs/INSTRUCTOR_GUIDE.md) for the teaching
 sequence, the slide decks, assessment rubrics, and how to point the labs at a different model
@@ -252,7 +263,7 @@ notebooks, and (for the chatbots) a Gradio chat UI.
 | Lab | Folder | Technique | What it teaches |
 |---|---|---|---|
 | 06 | [lab06_llm_rag_case_reports](lab06_llm_rag_case_reports/) | Retrieval-Augmented Generation | Build a RAG from scratch so a model answers questions about case reports, grounded in them and cited. |
-| 07 | [lab07_llm_android_image_agent](lab07_llm_android_image_agent/) | Tool-using agent (ReAct) | An agent that lets a lightweight Qwen model walk an Android device image, answer a question, and cite the exact file it used. Includes chatbot versions. |
+| 07 | [lab07_llm_android_image_agent](lab07_llm_android_image_agent/) | Tool-using agent (ReAct) | An agent that lets a free hosted model walk an Android device image, answer a question, and cite the exact file it used. Includes chatbot versions. |
 | 08 | [lab08_llm_bug_report_chatbot](lab08_llm_bug_report_chatbot/) | Tool-using agent (chatbot) | The same agent over an Android bug report students can pull from their own phone. |
 | 09 | [lab09_llm_incident_response_copilot](lab09_llm_incident_response_copilot/) | Agent + plan, playbook, and ISMS grounding | An incident-response copilot that works from the company's IR plan, playbooks, and ISO 27001 ISMS, with approval-gated, simulated actions. |
 | 10 | [lab10_llm_memory_forensics_volatility](lab10_llm_memory_forensics_volatility/) | Tool-using agent over Volatility 3 | A memory-forensics analyst whose toolset is Volatility's plugin list, working a real public memory image with a ground-truth answer key. |
@@ -281,8 +292,12 @@ reads the report and owns the final judgment.
 - **Teaching-scale data.** The synthetic cases teach reasoning; they do not mirror the full complexity
   of a real acquisition. The real memory sample is a 2012 Windows XP image: small and well documented,
   but older than current systems (for example, Volatility 3's network plugin does not support XP).
-- **Models change.** Hosted model availability and behavior shift over time. The notebooks
-  default to a current model and recover gracefully if a model name is retired.
+- **Models change.** Hosted model availability and behavior shift over time. Each notebook keeps a
+  short list of preferred free models, uses the first one the key can reach, and prints which it chose,
+  so a retired model does not stop the class. Free-tier rate limits are handled with automatic retries.
+- **The evidence check is a floor, not a proof.** It catches identifiers no tool returned; it cannot catch
+  a wrong interpretation of real evidence (calling a real injection benign, for example). The answer keys
+  and a human examiner remain the final check.
 - **Not legal advice.** These labs teach method, not courtroom procedure. Real investigations are
   governed by law, policy, and qualified human examiners.
 - **Responsible use.** The exfiltration and surveillance scenarios are teaching devices. They are

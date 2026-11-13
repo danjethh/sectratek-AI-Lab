@@ -191,20 +191,24 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
             for title, body in secs:
                 yield doc, title, body
 
+    def _score(words, doc, text):
+        """How well a playbook section fits the goal: word hits, with hits in the file name x3."""
+        return sum(1 for w in words if w in text) + 3 * sum(1 for w in words if w in doc.lower())
+
     def _pull(title_keywords, goal="", limit=2000):
-        """Collect playbook sections whose title matches any keyword; prefer the goal's playbook."""
-        key = (goal or "").lower()
-        hits, fallback = [], []
+        """Collect playbook sections whose title matches any keyword, best fit to the goal first
+        (by the goal's words, so 'ransomware on the finance PC' finds the ransomware playbook)."""
+        words = set(re.findall(r"[a-z]{4,}", (goal or "").lower()))
+        scored = []
         for doc, title, body in _all_sections():
             if any(w in title.lower() for w in title_keywords):
-                block = f"[{doc} > {title}]\n{body}"
-                if not goal or key in doc.lower() or key in (title + " " + body).lower():
-                    hits.append(block)
-                else:
-                    fallback.append(block)
-        chosen = hits or fallback
-        if not chosen:
+                score = _score(words, doc, (title + " " + body).lower())
+                scored.append((score, f"[{doc} > {title}]\n{body}"))
+        if not scored:
             return None
+        scored.sort(key=lambda x: -x[0])          # stable: equal scores keep document order
+        best = scored[0][0]
+        chosen = [b for sc, b in scored if sc == best] if best > 0 else [b for _, b in scored]
         text = "\n\n".join(chosen)
         return text[:limit] + ("" if len(text) <= limit else "\n...[truncated]")
 
@@ -238,7 +242,7 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         t = _safe(path)
         if not t.exists() or t.is_dir():
             return None, f"No such artifact: {path}"
-        if t.read_bytes()[:15] == b"SQLite format 3":
+        if ak.read_head(t)[:15] == b"SQLite format 3":
             return None, f"[{path} is a SQLite database. Use run_sql with a SELECT.]"
         return t.read_text(errors="replace"), None
 
@@ -306,19 +310,26 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
     def draft_notification(audience="management", incident=""):
         """DRAFT: write a notification for `audience` (management/legal/customers/regulator), pulling
         the template from the playbook if there is one. This DRAFTS only - show it and ask to approve."""
-        for doc, title, body in _all_sections():
-            if "template" in title.lower() and (not incident or incident.lower() in doc.lower()
-                                                 or incident.lower() in title.lower()):
-                return f"(template from [{doc} > {title}], audience={audience})\n{body}"
+        words = set(re.findall(r"[a-z]{4,}", (incident or "").lower()))
+        templates = [(_score(words, doc, title.lower()), doc, title, body)
+                     for doc, title, body in _all_sections() if "template" in title.lower()]
+        templates = [t for t in templates if t[0] > 0]
+        if templates:
+            _, doc, title, body = max(templates, key=lambda t: t[0])
+            return f"(template from [{doc} > {title}], audience={audience})\n{body}"
         return (f"To: {audience}\nSubject: Security incident in progress ({incident or 'under triage'})\n\n"
                 f"Team, we are responding to a suspected {incident or 'security incident'} at {org}. The "
                 "response team is engaged and following the IR plan. We will send an update within 60 "
                 "minutes or on any material change. [No playbook template found; generic draft.]")
 
+    def _approved(value):
+        """Strict approval check: only a real yes counts ("false", "no" or "" do not)."""
+        return value is True or str(value).strip().lower() in ("true", "yes", "approved", "1")
+
     def notify(audience="management", approved=False):
         """SIMULATE (gated): 'send' the notification to `audience`. Only after the team approves in
         chat (approved=True). Nothing is really sent; it is logged to the action log."""
-        if not approved:
+        if not _approved(approved):
             return "Not sent. I need the team's explicit approval first (reply 'approve' to send)."
         entry = f"[DRILL/SIMULATED] Notification 'sent' to {audience}."
         action_log.append(entry)
@@ -326,7 +337,7 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
 
     def open_ticket(summary="", approved=False):
         """SIMULATE (gated): open an incident ticket. Only with the team's approval. Logged, not real."""
-        if not approved:
+        if not _approved(approved):
             return "Not opened. Confirm with the team first (approved=true) and I will log it."
         entry = f"[DRILL/SIMULATED] Incident ticket opened: {summary or 'security incident'}."
         action_log.append(entry)
@@ -334,7 +345,7 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
 
     def page_oncall(role="IT on-call", approved=False):
         """SIMULATE (gated): page an on-call role (e.g. 'IT on-call', 'Forensics Lead'). Gated + logged."""
-        if not approved:
+        if not _approved(approved):
             return f"Not paged. Confirm with the team first (approved=true) to page {role}."
         entry = f"[DRILL/SIMULATED] Paged {role}."
         action_log.append(entry)
@@ -372,7 +383,7 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
                 "block_ioc": "Blocked indicator at the firewall"}
         plan = {"isolate_host": "isolate the host", "disable_account": "disable the account",
                 "block_ioc": "block the indicator at the firewall"}
-        if not approved:
+        if not _approved(approved):
             intent = plan.get(kind, f"take containment action '{kind}' on")
             return f"Not done. This would {intent}: {target or '(target?)'}. Get the team's approval first."
         entry = f"[DRILL/SIMULATED] {done.get(kind, kind)}: {target or '(unspecified)'}."
@@ -403,7 +414,7 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         key = (keyword or "").lower()
         out = []
         for p in sorted(base.rglob("*")):
-            if not p.is_file() or p.suffix.lower() not in _TEXT_EXT:
+            if p.is_symlink() or not p.is_file() or p.suffix.lower() not in _TEXT_EXT:
                 continue
             for i, line in enumerate(p.read_text(errors="replace").splitlines(), 1):
                 if key in line.lower():
@@ -422,11 +433,10 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         if not q.lower().startswith(("select", "pragma")):
             return "Only read-only SELECT queries are allowed."
         try:
-            con = sqlite3.connect(f"file:{t}?mode=ro", uri=True)
-            cur = con.execute(q)
-            cols = [c[0] for c in cur.description] if cur.description else []
-            rows = cur.fetchmany(50)
-            con.close()
+            with ak.sqlite_copy(t) as con:   # query a temporary copy; the artifact is never opened
+                cur = con.execute(q)
+                cols = [c[0] for c in cur.description] if cur.description else []
+                rows = cur.fetchmany(50)
         except Exception as e:
             return f"SQL error: {e}"
         if not rows:
@@ -491,7 +501,8 @@ def make_ir_tools(knowledge, evidence_root, action_log, org="SectraTEK"):
         for val, note, doc, title in _known_bad():
             v = val.lower()
             for c in cand:
-                if c == v or c.endswith("." + v) or v.endswith("." + c) or (len(v) > 4 and v in c):
+                # exact match, or a subdomain of a known-bad domain (cdn.bad.example matches bad.example)
+                if c == v or (not _IPV4.fullmatch(v) and c.endswith("." + v)):
                     matches.append(f"MATCH {val}  (seen in {c})  - {note} [{doc} > {title}]")
                     break
         if not matches:

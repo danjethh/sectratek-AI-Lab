@@ -11,18 +11,18 @@
 
 **Course:** AI for Cybersecurity and Digital Forensics
 **Technique:** A tool-using agent (the ReAct pattern), built from scratch
-**Runtime:** Google Colab or any hosted Jupyter, free Qwen model via OpenRouter, no local install
+**Runtime:** Google Colab or any hosted Jupyter, free Groq model (same key as Labs 01-06), no local install
 **Slides:** [lecture deck (PDF)](slides/SectraTEK_Lab07_Agent.pdf) : [PowerPoint](slides/SectraTEK_Lab07_Agent.pptx)
 
 ---
 
 ## Abstract
 
-This practical teaches the **agent** idea: a language model that does not answer from memory but instead
+This lab teaches the **agent** idea: a language model that does not answer from memory but instead
 **acts**, calling tools to open the evidence, reading what it finds, and answering only from that. The
 student builds a small forensic agent by hand over a synthetic Android extraction. The agent is given
-three read-only tools (list a folder, read a file, run a SQL query), and a loop that lets a lightweight
-**Qwen** model think, call one tool, observe the result, and repeat until it can answer, with the file it
+five read-only tools (list a folder, read a file, run SQL, find files, search text), and a loop that lets
+a free hosted model think, call one tool, observe the result, and repeat until it can answer, with the file it
 used named as the citation. A side-by-side comparison shows the point: asked which accounts are on the phone, a plain
 model invents a fluent, specific, wrong name; the agent walks the image, reads the real account database,
 and answers with the artifact path. The whole thing is a few lines of plain Python, so every decision and
@@ -44,7 +44,8 @@ evidence supports, and show where it came from.
 9. [Discussion](#9-discussion)
 10. [Learning outcomes and assessment](#10-learning-outcomes-and-assessment)
 11. [Files in this lab](#11-files-in-this-lab)
-12. [Credits](#12-credits)
+12. [Running it other ways](#12-running-it-other-ways)
+13. [Credits](#13-credits)
 
 ---
 
@@ -115,17 +116,18 @@ plain model.
 
 | Piece | What it does |
 |---|---|
-| **The tools** | Five read-only Python functions: `list_dir(path)`, `read_file(path)` (handles text, JSON, and points to `run_sql` for databases), `run_sql(path, query)`, `find_files(name)`, and `search_text(keyword)`. All are sealed inside the image folder and cannot change evidence. An optional, off-by-default `run_python(code)` tool (Part D) lets the agent write its own code, to show the power and the risk. |
+| **The tools** | Five read-only Python functions: `list_dir(path)`, `read_file(path)` (handles text, JSON, and points to `run_sql` for databases), `run_sql(path, query)`, `find_files(name)`, and `search_text(keyword)`. All are sealed inside the image folder and cannot change evidence. An optional `run_python(code)` tool (Part D, added only if you uncomment one line) lets the agent write its own code, to show the power and the risk. |
 | **The protocol** | A system prompt that asks the model to reply with one small JSON object each turn: either a tool call, or a final answer with an `evidence_path`. |
 | **The loop** | Ask the model for its next move, run that one tool, feed the result back as an observation, and repeat until it answers or hits a step limit. |
-| **The guardrail** | Tools are read-only and path-sandboxed. The agent cannot write, and cannot leave the device, the way a loosely-scoped agent drifts into fetching a web page it was never meant to touch. |
+| **The guardrail** | Tools are read-only and path-sandboxed. The agent cannot write, and cannot leave the image folder, unlike a loosely scoped agent that drifts into fetching a web page it was never meant to touch. Before an answer is accepted, the loop also checks that the file it cites is one it actually opened. |
 
 **Why a boundary.** Keeping the toolbox small, read-only, and locked to the image is the forensic version
 of handling an exhibit: look, never alter, and stay within the evidence. It is also what keeps the agent's
 reasoning on the device instead of wandering off it.
 
-**Runtime.** The agent is driven by a small, free, open-source **Qwen** model through OpenRouter (an
-OpenAI-compatible endpoint), with the key entered via a hidden prompt and never saved. The notebook builds
+**Runtime.** The agent is driven by a free open-weight model on Groq (an OpenAI-compatible endpoint; the
+setup cell picks the first model on its `PREFERRED` list), with the key entered via a hidden prompt and
+never saved. The local notebook runs a small **Qwen** model on your own PC instead. The notebook builds
 the synthetic image itself, so it runs standalone in Colab with no clone and no install beyond a one-time
 `pip install openai`.
 
@@ -142,6 +144,7 @@ one so the agent has somewhere to navigate. Everything in it is fictional.
 | `data/data/com.android.providers.contacts/databases/contacts2.db` | Saved contacts |
 | `data/data/com.android.providers.telephony/databases/mmssms.db` | SMS messages |
 | `data/data/com.whatsapp/databases/msgstore.db` | WhatsApp messages |
+| `data/data/com.whatsapp/files/me.json` | The WhatsApp profile (phone number and push name) |
 | `data/system/packages.list` | Installed apps |
 | `data/misc/wifi/WifiConfigStore.xml` | Saved Wi-Fi networks |
 | `data/system/users/0/settings_secure.xml` | Device properties (android_id, device name) |
@@ -154,9 +157,9 @@ All accounts, numbers, and identifiers are fabricated for teaching.
 ## 7. Practical: running the lab
 
 1. Click the **Open in Colab** badge at the top of this page.
-2. Run **Part 0** (setup): install `openai`; connect to a free Qwen model (paste an OpenRouter key); build
+2. Run **Part 0** (setup): install `openai`; connect to a free hosted model (paste your Groq key); build
    the synthetic Android image.
-3. Run **Part A**: define the three read-only tools, the tool protocol, and the agent loop, then ask the
+3. Run **Part A**: define the five read-only tools, the tool protocol, and the agent loop, then ask the
    first question (*which email accounts are signed in on this device?*) and watch the reasoning trace.
 4. Run **Part B**: ask the same question with and without the agent, and compare.
 5. Run **Part C**: ask your own investigation questions over the image.
@@ -221,11 +224,11 @@ model and the agent on the same question; and one sentence on why citing the fil
 
 | Path | What it is |
 |---|---|
-| `04_lab_notebook.ipynb` | The hosted (Colab/OpenRouter) step-by-step teaching notebook |
+| `04_lab_notebook.ipynb` | The hosted (Colab/Groq) step-by-step teaching notebook |
 | `04_lab_notebook_local.ipynb` | The same lab, but with a **local** Qwen via Ollama (download-to-PC, no API key) |
 | `chatbot_ui.ipynb` | The agent as an interactive **chatbot with a UI** (Gradio; Colab gives a public link) |
 | `chatbot_jupyter.ipynb` | The agent as a **chatbot run in the notebook** (`ask("...")`, no UI framework) |
-| `chatbot_app.py` | The Gradio chatbot as a script, to run locally: `python chatbot_app.py` |
+| `chatbot_app.py` | The Gradio chatbot as a script (optional, needs a local Python with gradio + openai): `python chatbot_app.py` |
 | `agentkit.py` | The shared agent core (model connection, tools, the think-act-observe loop) |
 | `slides/SectraTEK_Lab07_Agent.pptx` | The lecture deck for the lab |
 | `slides/SectraTEK_Lab07_Chatbots.pptx` | A short deck on the chatbot pieces (both chatbots, UI vs Jupyter, Colab vs Ollama) |
@@ -241,11 +244,12 @@ The synthetic Android image is created by the code itself, so there is no eviden
   through [Ollama](https://ollama.com) (`ollama pull qwen3:8b`), so nothing leaves your machine. Run it in
   Jupyter on your computer, not in Colab (Colab cannot reach a model on your machine).
 - **As a chatbot:** `chatbot_ui.ipynb` launches a real chat window; `chatbot_jupyter.ipynb` runs the chat
-  inside the notebook. Both use the same agent. A sister chatbot that answers questions about an Android
+  inside the notebook. Keep the chat's public link private: anyone who has it can use it and your key. Both use the same agent. A sister chatbot that answers questions about an Android
   **bug report** (which you can generate from your own phone with `adb bugreport`) lives in
   [`../lab08_llm_bug_report_chatbot/`](../lab08_llm_bug_report_chatbot/).
-- **Letting the agent write code:** Part D of the lab adds an optional `run_python` tool. It is off by
-  default and blocks obvious writes, so you can see both what it enables and why it is risky on real evidence.
+- **Letting the agent write code:** Part D of the lab defines an optional `run_python` tool; it is only
+  added when you uncomment one line. Its keyword check stops accidents but is not a sandbox, so you can see
+  both what it enables and why it is risky on real evidence. Use it only on a copy.
 
 ---
 
@@ -253,5 +257,6 @@ The synthetic Android image is created by the code itself, so there is no eviden
 
 The lab design, the synthetic image, and the from-scratch agent are original, written for this course by
 Daniel Kwaku Ntiamoah Addai, SectraTEK Lab. The idea of pointing a small local model at a whole Android
-image and asking a plain-English question is due to Frank Xu. The agent is driven by an open-source
-**Qwen** model (https://qwenlm.github.io/) served through a free, OpenAI-compatible endpoint (OpenRouter).
+image and asking a plain-English question is due to Frank Xu. The hosted notebook is driven by a free
+open-weight model on Groq; the local notebook by an open-source **Qwen** model (https://qwenlm.github.io/)
+through Ollama.

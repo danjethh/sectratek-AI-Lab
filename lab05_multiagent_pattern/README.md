@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="slides/SectraTEK_Lab05_Multiagent.pdf"><img src="slides/img/cover.png" alt="Lab 5: The Multiagent Pattern - lecture deck cover" width="880"></a>
+  <a href="slides/SectraTEK_Lab05_Multiagent.pdf"><img src="slides/img/cover.png" alt="Lab 05: The Multiagent Pattern - lecture deck cover" width="880"></a>
 </p>
 
 # Lab 05: The Multiagent Pattern for Evidence and Custody Review
@@ -29,7 +29,7 @@ file was transmitted (a technical question, answered **likely** because the reco
 *started* but not *completed*) and whether a gap in the chain-of-custody record weakens confidence (an
 evidence-handling question that must not be mistaken for proof about the phone). Students run the team
 one agent at a time (Part A), then let a **Crew** orchestrate the same team in dependency order (Part
-B). It is the capstone pattern: each agent is itself a ReAct agent with tools (Lab 3), so the course's
+B). It is the capstone pattern: each agent is itself a ReAct agent with tools (Lab 03), so the course's
 ideas compose.
 
 ---
@@ -59,7 +59,7 @@ finding. The **Multiagent Pattern** gives a model team the same separation: dist
 roles, each with its own task and its own tools, passing findings forward and challenging what came
 before.
 
-It is also where the course's patterns compose. Each agent here is a **ReAct agent** (Lab 3) that
+It is also where the course's patterns compose. Each agent here is a **ReAct agent** (Lab 03) that
 reasons and calls evidence tools inside its own turn. The new element is coordination: a **handoff** of
 context between agents, and a **Crew** that runs them in dependency order.
 
@@ -135,8 +135,9 @@ The notebook is in two parts, by design.
 | `EvidenceVerificationAgent` | the same technical tools | a revised rating (likely, not confirmed) |
 | `CustodyAuditAgent` | the chain-of-custody tool | the final confidence-bounded conclusion |
 
-**Runtime.** The notebook connects to a free, OpenAI-compatible endpoint (Groq by default, model
-`llama-3.3-70b-versatile`). The key is entered with a hidden prompt and never saved. The notebook writes
+**Runtime.** The notebook connects to a free, OpenAI-compatible endpoint (Groq by default; the setup
+cell picks the first free model on its `PREFERRED` list, currently `qwen/qwen3.8-27b`, which follows
+the `<tool_call>` text format this agent uses). The key is entered with a hidden prompt and never saved. The notebook writes
 the six case artifacts to a local `data/` folder itself, so it runs standalone in Colab with no clone
 and no install. See [../docs/GROQ_SETUP.md](../docs/GROQ_SETUP.md).
 
@@ -184,8 +185,7 @@ and no install. See [../docs/GROQ_SETUP.md](../docs/GROQ_SETUP.md).
 5. Write your own final judgment.
 6. Save and submit the notebook.
 
-No local install is required. If the default model name is ever retired, the setup cell prints the
-models available on your key.
+No local install is required. If a model is ever retired, the setup cell uses the next one on its `PREFERRED` list and prints which it chose.
 
 ---
 
@@ -226,8 +226,8 @@ transmitted" overreach that a single agent would carry through.
 and the evidence-handling question apart. A custody gap is a handling issue; it changes how much you
 trust the evidence, not what the phone did.
 
-**The capstone.** This pattern composes the whole course: each agent is a ReAct agent (Lab 3) with tools
-(Lab 2), capable of reflection (Lab 1) and used within a planned workflow (Lab 4). Across all five, the
+**The capstone.** This pattern composes the whole course: each agent is a ReAct agent (Lab 03) with tools
+(Lab 02), capable of reflection (Lab 01) and used within a planned workflow (Lab 04). Across all five, the
 constant is the same: the AI is an aid to an examiner, never the examiner.
 
 ---

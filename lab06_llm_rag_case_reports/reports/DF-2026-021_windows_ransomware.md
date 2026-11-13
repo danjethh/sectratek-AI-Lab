@@ -1,5 +1,7 @@
 # Case DF-2026-021: Windows Ransomware Incident
 
+*Synthetic teaching report. All names, systems, and indicators are fictional.*
+
 Examiner: Analyst C, SectraTEK Lab
 Device: Dell OptiPlex workstation (Windows 11)
 Acquisition: E01 disk image, FTK Imager
@@ -19,7 +21,7 @@ A finance workstation was encrypted by ransomware. Hundreds of documents were re
 - Encrypted extension: .lxk
 - Bitcoin address in note: 1FakeRansomAddr00000000000000000000
 - Loader SHA-256: 9a1d4c0b7e2f5a6c8d3b1e0f4a7c9d2b6e5f8a1c3d7b2e9f0a4c6d8b1e3f5a7c
-- Staging host: updates.fake-cdn-host.net
+- Staging host: updates.fake-cdn-host.example
 
 ## Conclusion
 The incident is consistent with a macro-delivered ransomware loader that disabled local

@@ -9,13 +9,13 @@ These have been seen in prior SectraTEK incidents or came from a trusted sharing
 high-signal and tie it back to the relevant playbook. Format is one indicator per line: the value, then
 two or more spaces, then a short note.
 
-- exfil-sync.net          domain   Known data-exfiltration / DNS-tunnelling C2. Any subdomain counts.
+- exfil-sync.example          domain   Known data-exfiltration / DNS-tunnelling C2. Any subdomain counts.
 - su.exe                  file     Dropper/loader used to install a persistence service.
 - SysUpdateSvc            service  Fake "update" service used for persistence.
-- 185.220.101.47          ip       C2 node seen in a prior exfiltration case.
+- 203.0.113.47          ip       C2 node seen in a prior exfiltration case.
 - README_RESTORE.txt      file     Ransom note filename seen in a prior ransomware case.
-- update-sync.net         domain   Look-alike callback domain from a prior phishing-to-malware case.
-- 45.137.22.90            ip       Credential-phishing landing-page host seen before.
+- update-sync.example         domain   Look-alike callback domain from a prior phishing-to-malware case.
+- 198.51.100.90            ip       Credential-phishing landing-page host seen before.
 
 ## How to use this list
 The copilot extracts candidate indicators (domains, IPs, file names, services) from the artifacts the

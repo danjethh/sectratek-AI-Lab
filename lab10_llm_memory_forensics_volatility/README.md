@@ -107,6 +107,13 @@ Guardrails, built into `memkit.py`:
   never flooded.
 - **Cite or do not claim.** Every answer must name the plugin and PID. A `malfind` hit is a lead until a
   second plugin supports it.
+- **Checked by the harness.** Limiting the tools to the image limits what the model can *look at*, not what
+  it can *say*. In testing, a model answered "is anything unusual?" without running a plugin and invented a
+  hidden "PID 4321 unknown.exe" loading "malicious.dll". So before an answer is accepted, the agent loop
+  checks it: a plugin must have run for the question, and every PID, IP address, memory address, and file
+  name in the answer must appear in output a plugin actually returned. Otherwise the answer is sent back
+  (you see `evidence_check` in the trace); if the model still cannot back it, the answer arrives marked
+  UNVERIFIED. The check cannot catch a wrong reading of real evidence, which is why the answer key exists.
 
 ## 5. The case and the memory image
 
@@ -119,9 +126,9 @@ used for years to teach memory forensics.
 | | |
 |---|---|
 | Download | about 40 MB (zip), 512 MB unpacked; fetched by the notebook |
-| Integrity | SHA-256 of the zip and MD5 of the image are checked against pinned values (`7494f3b77db1525c1974f5380744ae46`) |
+| Integrity | SHA-256 of the zip and MD5 of the image (`7494f3b77db1525c1974f5380744ae46`) are both enforced: a mismatch stops the notebook |
 | System | Windows XP SP3, 32-bit (PAE), captured 2012-07-22 02:45 UTC |
-| Tested with | Volatility 3 (2.28.2) |
+| Tested with | Volatility 3 2.28.2 (the notebooks pin this version, so the answer key stays valid) |
 
 **Use your own image:** set `MEMORY_IMAGE` in the notebook to its path. On Windows Vista and later, the
 `netscan` network plugin also works.
@@ -184,7 +191,7 @@ proves it. The agent never reads that file. After working the case, compare:
 | `memory_agent_jupyter.ipynb` | The main lab: run Volatility by hand, then work the case with `talk("...")`. |
 | `memory_agent_ui.ipynb` | The same analyst as a Gradio chat window. |
 | `memkit.py` | The toolset (one tool per whitelisted plugin), the runner, guardrails, and the system prompt. |
-| `memory_app.py` | The Gradio app, also runnable locally: `python memory_app.py`. |
+| `memory_app.py` | The Gradio app (optional local run, needs Python with volatility3 + gradio + openai): `python memory_app.py`. |
 | `agentkit.py` | The shared agent core (the think-act-observe loop), as in the other labs. |
 | `case/case_brief.md` | The case: what happened, what was collected, the questions. |
 | `answer_key.md` | The ground truth, for checking the AI's answers. |
@@ -197,5 +204,6 @@ The memory image is downloaded at run time and is never stored in this repositor
 Lab design and code by Daniel Kwaku Ntiamoah Addai, SectraTEK Lab. Memory analysis by
 [Volatility 3](https://github.com/volatilityfoundation/volatility3) (Volatility Foundation, Volatility
 Software License), installed from PyPI at run time. The Cridex memory image is a widely used public teaching
-sample listed on the Volatility Foundation's memory-samples page; the notebook downloads it from a public
-mirror and verifies it against pinned hashes. The case story is a fictional framing for the class.
+sample listed on the Volatility Foundation's memory-samples page; the notebook downloads it from the public
+mirror [Divinemonk/memory_forensics_with_volatility](https://github.com/Divinemonk/memory_forensics_with_volatility/releases/tag/mem_sample)
+(release `mem_sample`, MIT licensed) and verifies it against pinned hashes. The case story is a fictional framing for the class.

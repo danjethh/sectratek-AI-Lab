@@ -7,7 +7,7 @@ playbooks to walk them through the response, drafts the management notification 
 commands, and reads back any artifacts the team uploads. Everything is a drill; no real email.
 
 Config via environment (optional):
-  PROVIDER / MODEL / OPENROUTER_API_KEY   (as in the other labs)
+  PROVIDER / MODEL / GROQ_API_KEY   (as in the other labs: groq by default)
   KNOWLEDGE_DIR    folder of the plan + playbooks (.md/.txt/.pdf/.docx). Default: knowledge
   ORG              company name shown to the agent. Default: SectraTEK
 """
@@ -17,7 +17,7 @@ import tempfile
 import gradio as gr
 import irkit as ik
 
-PROVIDER = os.environ.get("PROVIDER", "openrouter")
+PROVIDER = os.environ.get("PROVIDER", "groq")
 MODEL = os.environ.get("MODEL") or None
 ORG = os.environ.get("ORG", "SectraTEK")
 KNOWLEDGE_DIR = os.environ.get("KNOWLEDGE_DIR", "knowledge")
@@ -154,7 +154,7 @@ INTRO = (
     "happening; it walks you through the response from the company's plan and playbooks, drafts the "
     "management notification (and only **sends it - simulated -** after you approve), recommends the "
     "exact collection commands, and reads the artifacts you upload.\n\n"
-    f"*Model: `{PROVIDER}` / `{MODEL or 'default Qwen'}`  ·  All emails are simulated; nothing is really sent.*"
+    f"*Model: `{PROVIDER}` / `{MODEL or 'auto-picked free model'}`  ·  All emails are simulated; nothing is really sent.*"
 )
 
 EXAMPLES = [
@@ -172,7 +172,7 @@ EXAMPLES = [
 
 def build_demo():
     with gr.Blocks(title="Sectra First Responder") as demo:
-        state = gr.State(_new_state())
+        state = gr.State(_new_state)   # a callable: every browser session gets its OWN evidence folder
         gr.Markdown(INTRO)
         with gr.Row():
             with gr.Column(scale=2):
