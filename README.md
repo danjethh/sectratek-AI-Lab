@@ -13,7 +13,7 @@
 **Author and instructor:** Daniel Kwaku Ntiamoah Addai, Mobile Threat Research Lead, SectraTEK Lab ([lab.sectratek.com](https://lab.sectratek.com))
 **Status:** All ten labs available: `lab01`-`lab05` agentic AI patterns, `lab06`-`lab10` LLMs for forensics.
 
-**New here?** Start with the [Course Overview deck](course_overview/) for a 12-slide tour of the five patterns and how the labs run. Then see [labs 06-10](#labs-06-10-llms-for-forensics): RAG, device and memory analysis agents, and an incident-response copilot.
+**New here?** Start with the [Course Overview deck](course_overview/) for a 14-slide tour of the five patterns, all ten labs, and how the labs run. Then see [labs 06-10](#labs-06-10-llms-for-forensics): RAG, device and memory analysis agents, and an incident-response copilot.
 
 ---
 

@@ -7,10 +7,10 @@ what you need, and the order to work the labs in.
   <a href="SectraTEK_Course_Overview.pdf"><img src="../docs/img/cover.png" alt="Course Overview deck: Five Patterns, One Discipline" width="720"></a>
 </p>
 
-- **[SectraTEK_Course_Overview.pdf](SectraTEK_Course_Overview.pdf)** ([.pptx](SectraTEK_Course_Overview.pptx)) - a 12-slide deck
+- **[SectraTEK_Course_Overview.pdf](SectraTEK_Course_Overview.pdf)** ([.pptx](SectraTEK_Course_Overview.pptx)) - a 14-slide deck
   that introduces agentic AI, the five agent patterns, the evidence-bounded habit that runs through every
-  lab, how the labs run (free, in the browser), the syllabus for Labs 01-05, and how to begin.
-  Labs 06-10 each have their own deck in their lab folder.
+  lab, how the labs run (free, in the browser), the syllabus for all ten labs, how the code checks the
+  AI's answers, and how to begin. Each lab also has its own deck in its lab folder.
 
 ## What you need
 
