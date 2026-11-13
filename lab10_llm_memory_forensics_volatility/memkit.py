@@ -156,6 +156,22 @@ _NOISY = {"__children", "File output", "Hexdump", "Disasm", "Notes"}
 _HEXCOLS = {"Offset", "Offset(V)", "Offset(P)", "Base", "Start VPN", "End VPN", "Physical Address"}
 
 
+def _ldr_note(rows):
+    """State plainly the rows a reader must not miss: memory in NONE of the three loader lists
+    (InLoad, InInit, InMem all False). That is a fact from the output, not a verdict."""
+    def _false(v):
+        return str(v).strip().lower() == "false"
+    odd = [r for r in rows if all(_false(r.get(k)) for k in ("InLoad", "InInit", "InMem"))]
+    if not odd:
+        return "NOTE: every module here is in at least one loader list.\n"
+    def _addr(v):
+        return hex(v) if isinstance(v, int) else str(v)
+    items = ", ".join(f"{_addr(r.get('Base'))} (mapped file: {r.get('MappedPath') or '-'})" for r in odd)
+    return (f"NOTE: {len(odd)} region(s) appear in NONE of the three loader lists (InLoad, InInit and InMem "
+            f"all False): {items}. A region the loader does not know about, with no file behind "
+            "it, is a classic sign of injected code; corroborate with malfind.\n")
+
+
 def _vol_version():
     """The installed Volatility 3 version (part of the plugin-check cache key)."""
     try:
@@ -379,6 +395,8 @@ def make_memory_tools(image, case_dir="case", cache_dir=".volcache", findings=No
                 k = str(keyword).lower()
                 rows = [r for r in rows if k in " ".join(str(v) for v in r.values()).lower()]
             body = _malfind_view(rows) if name == "malfind" else _table(rows, spec.get("cols"), tree=spec.get("tree"))
+            if name == "ldrmodules":
+                body = _ldr_note(rows) + body
             shown_pid = f" --pid {pid}" if pid is not None and spec.get("pid") else ""
             shown_kw = f" | filter: {keyword}" if keyword else ""
             head = f"[{used}{shown_pid}{shown_kw}] {len(rows)} rows\n"

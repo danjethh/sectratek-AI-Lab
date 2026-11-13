@@ -447,6 +447,21 @@ def run_agent_iter(question, client, model, tools, system_prompt=None, max_steps
         yield {"step": step, "thought": move.get("thought", ""),
                "action": tool, "args": args, "observation": observation}
         messages.append({"role": "user", "content": f"Observation:\n{observation}"})
+    # Step limit reached. Do not throw away what was found: ask once for the best answer from the
+    # observations so far, and run it through the same evidence check (flagged if it fails).
+    if tools_run:
+        messages.append({"role": "user", "content": "You have reached the step limit. Reply now with your "
+                         "final_answer JSON, based only on the observations above. If they do not answer "
+                         "the question, say so plainly."})
+        move = parse_action(chat(client, model, messages))
+        if move and "final_answer" in move:
+            answer = move["final_answer"]
+            problem = evidence_check(answer, tools_run, seen, cited=move.get("evidence_path", ""),
+                                     ran=ran, tool_names=list(tools))
+            if problem:
+                answer = f"{as_text(answer)}\n\nUNVERIFIED: {problem}"
+            yield {"final_answer": answer, "evidence_path": move.get("evidence_path", "")}
+            return
     yield {"final_answer": None, "evidence_path": ""}
 
 
