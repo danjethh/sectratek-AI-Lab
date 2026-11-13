@@ -7,7 +7,7 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danjethh/sectratek-AI-Lab/blob/main/lab01_reflection_pattern/03_lab_notebook.ipynb)
 
 > Teach a model to check its own work. In this lab an AI drafts a forensic incident report,
-> critiques it, and revises it, so that every claim stays inside what the evidence supports.
+> has a reviewer critique it, and revises it, so overclaims are flagged before the report reaches you.
 
 **Course:** AI for Cybersecurity and Digital Forensics - [SectraTEK AI Lab](../README.md)
 **Pattern:** Reflection (generate, critique, revise, repeat)
