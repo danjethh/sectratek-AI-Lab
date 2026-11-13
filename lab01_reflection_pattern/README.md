@@ -20,8 +20,9 @@
 ## Abstract
 
 This lab introduces the **Reflection Pattern**: the simplest agentic loop, in which a model
-generates an answer, criticizes that answer against the evidence, and revises it before the
-answer is returned. The student applies the loop to a synthetic mobile-forensics case in which a
+generates an answer, has a reviewer criticize how well that answer is supported, and revises it
+before the answer is returned. (The reviewer reads only the draft, not the evidence files, so
+checking the report against the files stays with the student.) The student applies the loop to a synthetic mobile-forensics case in which a
 customer list appears on a company phone, is copied into a messaging app, and is then deleted.
 The draft an LLM writes for this case is confident and wrong in a specific, instructive way: it
 states that the file was *delivered* to an outside party, which the artifacts do not establish.
@@ -94,7 +95,7 @@ that distinction visible and to use reflection to enforce it.
 
 <p align="center">
   <img src="slides/img/reflection_loop.png" alt="The Reflection loop: generate, critique, revise" width="860"><br>
-  <sub><em>The Reflection loop: the model drafts the report, a reviewer critiques it against the evidence, and it revises - repeating until nothing overreaches.</em></sub>
+  <sub><em>The Reflection loop: the model drafts the report, a reviewer critiques its wording and support, and it revises, repeating until the reviewer finds nothing material.</em></sub>
 </p>
 
 
